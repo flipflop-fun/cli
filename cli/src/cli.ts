@@ -1,0 +1,65 @@
+import { Command } from 'commander';
+import { initCommand } from './init';
+import { launchCommand } from './launch';
+import { setUrcCommand } from './set-urc';
+import { displayMintCommand } from './display-mint';
+import { mintCommand } from './mint';
+import { displayUrcCommand } from './display-urc';
+
+// Create the main program
+const program = new Command();
+
+program
+  .name('solana-tool')
+  .description('A CLI tool for Solana fair mint token operations')
+  .version('1.0.0');
+
+// Add init subcommand
+program.command('init')
+  .description('Initialize contracts including LUT and system config')
+  .option('--rpc <url>', 'RPC endpoint', 'http://127.0.0.1:8899')
+  .option('--keypair-base58 <base58>', 'Keypair in base58 format')
+  .action(initCommand);
+
+// Add launch subcommand
+program.command('launch')
+  .description('Launch a new token')
+  .option('--rpc <url>', 'RPC endpoint', 'http://127.0.0.1:8899')
+  .option('--name <name>', 'Token name')
+  .option('--symbol <symbol>', 'Token symbol')
+  .option('--uri <uri>', 'Token URI')
+  .option('--token-type <type>', 'Token type (meme or standard)', 'meme')
+  .option('--keypair-bs58 <bs58>', 'Keypair in BS58 format')
+  .action(launchCommand);
+
+// Add urc subcommand
+program.command('set-urc')
+  .description('Create or update URC code')
+  .option('--rpc <url>', 'RPC endpoint', 'http://127.0.0.1:8899')
+  .option('--mint <address>', 'Mint account address')
+  .option('--urc <code>', 'URC code')
+  .option('--keypair-bs58 <bs58>', 'Keypair in BS58 format')
+  .action(setUrcCommand);
+
+program.command('display-urc')
+  .description('Display URC details')
+  .option('--rpc <url>', 'RPC endpoint', 'http://127.0.0.1:8899')
+  .option('--urc <code>', 'URC code')
+  .action(displayUrcCommand);
+
+program.command('display-mint')
+  .description('Display mint details')
+  .option('--rpc <url>', 'RPC endpoint', 'http://127.0.0.1:8899')
+  .option('--mint <address>', 'Mint account address')
+  .action(displayMintCommand);
+
+// Add mint subcommand
+program.command('mint')
+  .description('Batch mint tokens')
+  .option('--rpc <url>', 'RPC endpoint', 'http://127.0.0.1:8899')
+  .option('--mint <address>', 'Mint account address')
+  .option('--urc <code>', 'URC code')
+  .option('--keypair-bs58 <bs58>', 'Keypair in BS58 format')
+  .action(mintCommand);
+
+program.parse();
