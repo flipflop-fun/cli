@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { Command } from 'commander';
 import { initCommand } from './init';
 import { launchCommand } from './launch';
@@ -14,13 +16,6 @@ program
   .description('A CLI tool for Solana fair mint token operations')
   .version('1.0.0');
 
-// Add init subcommand
-program.command('init')
-  .description('Initialize contracts including LUT and system config')
-  .option('--rpc <url>', 'RPC endpoint', 'http://127.0.0.1:8899')
-  .option('--keypair-base58 <base58>', 'Keypair in base58 format')
-  .action(initCommand);
-
 // Add launch subcommand
 program.command('launch')
   .description('Launch a new token')
@@ -31,6 +26,12 @@ program.command('launch')
   .option('--token-type <type>', 'Token type (meme or standard)', 'meme')
   .option('--keypair-bs58 <bs58>', 'Keypair in BS58 format')
   .action(launchCommand);
+
+program.command('display-mint')
+  .description('Display mint details')
+  .option('--rpc <url>', 'RPC endpoint', 'http://127.0.0.1:8899')
+  .option('--mint <address>', 'Mint account address')
+  .action(displayMintCommand);
 
 // Add urc subcommand
 program.command('set-urc')
@@ -47,12 +48,6 @@ program.command('display-urc')
   .option('--urc <code>', 'URC code')
   .action(displayUrcCommand);
 
-program.command('display-mint')
-  .description('Display mint details')
-  .option('--rpc <url>', 'RPC endpoint', 'http://127.0.0.1:8899')
-  .option('--mint <address>', 'Mint account address')
-  .action(displayMintCommand);
-
 // Add mint subcommand
 program.command('mint')
   .description('Batch mint tokens')
@@ -61,5 +56,12 @@ program.command('mint')
   .option('--urc <code>', 'URC code')
   .option('--keypair-bs58 <bs58>', 'Keypair in BS58 format')
   .action(mintCommand);
+
+// Add init subcommand
+// program.command('init')
+//   .description('Initialize contracts including LUT and system config, only by Flipflop program deployer')
+//   .option('--rpc <url>', 'RPC endpoint', 'http://127.0.0.1:8899')
+//   .option('--keypair-base58 <base58>', 'Keypair in base58 format')
+//   .action(initCommand);
 
 program.parse();

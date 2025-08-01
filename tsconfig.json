@@ -9,7 +9,9 @@
     "resolveJsonModule": true,
     "strict": true,
     "outDir": "dist",
-    "rootDir": "."
+    "rootDir": "cli/src",
+    "declaration": true,
+    "sourceMap": true
   },
   "include": ["cli/src/**/*"],
   "exclude": ["node_modules", "dist"]

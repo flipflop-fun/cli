@@ -1,14 +1,34 @@
 {
-  "name": "fair-mint-token-cli",
-  "license": "ISC",
+  "name": "@flipflop-sdk/cli",
+  "version": "1.0.0",
+  "description": "FlipFlop CLI tool for common operations",
+  "main": "dist/cli.js",
   "bin": {
-    "flipflop": "./cli/bin/flipflop"
+    "flipflop": "./dist/cli.js"
   },
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ],
   "scripts": {
     "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
     "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check",
-    "build-cli": "tsc",
+    "build": "tsc",
+    "prepublishOnly": "yarn build",
     "install-global": "npm link"
+  },
+  "keywords": [
+    "solana",
+    "flipflop",
+    "cli",
+    "defi",
+    "token"
+  ],
+  "author": "FlipFlop",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/flipflop-fun/sdk.git"
   },
   "dependencies": {
     "@coral-xyz/anchor": "0.31.1",
@@ -33,7 +53,7 @@
     "ts-mocha": "^10.0.0",
     "typescript": "^5.9.2"
   },
-  "resolutions": {
-    "@solana/web3.js": "^1.98.0"
+  "engines": {
+    "node": ">=16.0.0"
   }
 }
