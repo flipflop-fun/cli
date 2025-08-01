@@ -4,7 +4,7 @@ import { FairMintToken } from './types/fair_mint_token';
 import idl from './idl/fair_mint_token.json';
 import { LOOKUP_TABLE_ACCOUNT, SYSTEM_MANAGER_ACCOUNT } from './config';
 import { CONFIG_DATA_SEED, REFERRAL_SEED, SYSTEM_CONFIG_SEEDS, REFERRAL_CODE_SEED } from './constants';
-import { cleanTokenName, getMetadataByMint, getURCDetails, loadKeypairFromBase58, mintBy, parseConfigData } from './utils';
+import { cleanTokenName, getMetadataByMint, getURCDetails, loadKeypairFromBase58, mintBy } from './utils';
 
 interface MintOptions {
   rpc: string;
@@ -15,24 +15,23 @@ interface MintOptions {
 
 export async function mintCommand(options: MintOptions) {
   try {
-    // Implementation will go here
     const rpc = new Connection(options.rpc || 'http://127.0.0.1:8899');
     const urc = options.urc;
     const mintAccount = new PublicKey(options.mint);
 
     // Validate required parameters
     if (!options.keypairBs58) {
-      console.error('Missing --keypair-bs58 parameter');
+      console.error('Error: Missing --keypair-bs58 parameter');
       return;
     }
     
     if (!mintAccount) {
-      console.error('Missing --mint parameter');
+      console.error('Error: Missing --mint parameter');
       return;
     }
 
     if (!urc) {
-      console.error('Missing --urc parameter');
+      console.error('Error: Missing --urc parameter');
       return;
     }
     
@@ -55,6 +54,8 @@ export async function mintCommand(options: MintOptions) {
     });
 
     const program = new Program(idl, provider) as Program<FairMintToken>;
+
+    console.log('Processing mint request...');
 
     const referrerAccount = await getURCDetails(rpc, program, urc);
     const [referralAccount] = PublicKey.findProgramAddressSync(
@@ -82,12 +83,12 @@ export async function mintCommand(options: MintOptions) {
 
     const metadataData = await getMetadataByMint(rpc, mintAccount);
     if (!metadataData.success) {
-      console.error("Get metadata failed", metadataData.message);
+      console.error('Error: Failed to get token metadata -', metadataData.message);
       return;
     }
+    
     const _name = cleanTokenName(metadataData.data.name);
     const _symbol = cleanTokenName(metadataData.data.symbol);
-    const configData = await parseConfigData(program, configAccount);
 
     const result = await mintBy(
       provider,
@@ -104,16 +105,19 @@ export async function mintCommand(options: MintOptions) {
       LOOKUP_TABLE_ACCOUNT,
       protocolFeeAccount
     );
+    
     if(!result?.success) {
-      console.error("Mint failed");
+      console.error('Error: Mint operation failed');
       return;
     }
-    console.log("Mint success");
-    console.log("URC Details", Object.fromEntries(
-      Object.entries(result).map(([key, value]) => [key, value?.toString()])
-    ));
+    
+    console.log('Tokens minted successfully!');
+    
+    if (result.tx) {
+      console.log(`Transaction Hash: ${result.tx}`);
+    }
   } catch (error) {
-    console.error('Error in mint command:', error);
+    console.error('Error: Mint operation failed -', error);
     process.exit(1);
   }
 }

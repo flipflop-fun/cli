@@ -17,7 +17,7 @@ const createAddressLookupTable = async (
   addresses: PublicKey[]
 ) => {
   const slot = await connection.getSlot("finalized"); // not "confirmed"
-  console.log("slot", slot);
+  
   // Create instruction for Address Lookup Table
   const [createIx, lutAddress] = AddressLookupTableProgram.createLookupTable({
     authority: payer.publicKey,
@@ -25,7 +25,6 @@ const createAddressLookupTable = async (
     recentSlot: slot,
   });
 
-  console.log("Create Address Lookup Table: ", lutAddress.toBase58());
   // Create instruction to extend Address Lookup Table
   const extendIx = AddressLookupTableProgram.extendLookupTable({
     payer: payer.publicKey,
@@ -33,7 +32,7 @@ const createAddressLookupTable = async (
     lookupTable: lutAddress,
     addresses,
   });
-
+  
   // Create and send transaction
   const tx = new Transaction()
     .add(createIx)
@@ -78,7 +77,6 @@ const createLookupTable = async (
   return lookupTable;
 }
 
-
 // Init command handler
 export async function initCommand(options: any) {
   const rpcUrl = options.rpc;
@@ -86,10 +84,13 @@ export async function initCommand(options: any) {
 
   // Use keypair from command line argument
   if (!options.keypairBase58) {
-    console.error('Missing --keypair-base58 parameter');
+    console.error('❌ Error: Missing --keypair-base58 parameter');
+    console.log('💡 Usage: flipflop init --keypair-base58 <your_base58_keypair>');
     return;
   }
+  
   const systemManager = loadKeypairFromBase58(options.keypairBase58);
+  
   const wallet = {
     publicKey: systemManager.publicKey,
     signTransaction: async (tx: Transaction) => {
@@ -101,58 +102,69 @@ export async function initCommand(options: any) {
       return txs;
     }
   };
+  
   const provider = new AnchorProvider(rpc, wallet as anchor.Wallet, {
     commitment: 'confirmed',
   });
   
   const program = new Program(idl, provider) as Program<FairMintToken>;
 
+  console.log('\n🔍 Checking Address Lookup Table...');
   let lookupTableAddress: PublicKey;
   try {
     lookupTableAddress = new PublicKey(LOOKUP_TABLE_ACCOUNT || '');
     const accountInfo = await provider.connection.getParsedAccountInfo(lookupTableAddress);
     if (!accountInfo.value) {
-      console.log('LUT account does not exist, creating new LUT...');
+      console.log('⚠️  LUT account does not exist, creating new LUT...');
       const lut = await createLookupTable(provider.connection, systemManager);
       lookupTableAddress = lut.key;
-      console.log('New LUT address:', lookupTableAddress.toBase58());
-      console.log('Please update LOOKUP_TABLE_ACCOUNT in config with this address, and reload the script');
+      console.log('\n🎉 New LUT created successfully!');
+      console.log(`📋 LUT Address: ${lookupTableAddress.toBase58()}`);
+      console.log('\n📝 Next Steps:');
+      console.log('   1. Update LOOKUP_TABLE_ACCOUNT in config.ts with this address');
+      console.log('   2. Run the init command again to complete system setup');
       process.exit(0);
     } else {
-      console.log('LUT already exists:', lookupTableAddress.toBase58());
+      console.log(`✅ LUT already exists: ${lookupTableAddress.toBase58()}`);
     }
   } catch (error) {
-    console.log('Invalid LUT address, creating new LUT...');
+    console.log('⚠️  Invalid LUT address in config, creating new LUT...');
     const lut = await createLookupTable(provider.connection, systemManager);
     lookupTableAddress = lut.key;
-    console.log('New LUT address:', lookupTableAddress.toBase58());
-    console.log('Please update LOOKUP_TABLE_ACCOUNT in config with this address, and reload the script');
+    console.log('\n🎉 New LUT created successfully!');
+    console.log(`📋 LUT Address: ${lookupTableAddress.toBase58()}`);
+    console.log('\n📝 Next Steps:');
+    console.log('   1. Update LOOKUP_TABLE_ACCOUNT in config.ts with this address');
+    console.log('   2. Run the init command again to complete system setup');
     process.exit(0);
   }
 
-  // 计算 system config PDA
   const [systemConfigAccount] = PublicKey.findProgramAddressSync(
     [Buffer.from(SYSTEM_CONFIG_SEEDS), SYSTEM_MANAGER_ACCOUNT.toBuffer()],
     program.programId
   );
-  console.log("systemConfigAccount", systemConfigAccount.toBase58());
+  console.log(`📍 System Config PDA: ${systemConfigAccount.toBase58()}`);
+  
   // 检查 system config 是否存在
   if (await checkAccountExists(rpc, systemConfigAccount)) {
-    console.log('System config already exists.');
+    console.log('✅ System configuration already exists');
     const infoData = await program.account.systemConfigData.fetch(systemConfigAccount);
-    console.log("System config data", Object.fromEntries(
-      Object.entries(infoData).map(([key, value]) => [key, value.toString()])
-    ));
+    console.log('\n📋 Current System Configuration:');
+    console.log('-'.repeat(40));
+    Object.entries(infoData).forEach(([key, value]) => {
+      console.log(`   ${key}: ${value.toString()}`);
+    });
+    console.log('\n🎉 System initialization completed - already configured!');
     return;
   }
 
+  console.log('⚙️  Initializing system configuration...');
   const context = {
     admin: systemManager.publicKey,
     systemConfigAccount: systemConfigAccount,
     systemProgram: SystemProgram.programId,
   };
 
-  console.log("program id", program.programId.toBase58());
   const tx = await program.methods
     .initializeSystem()
     .accounts(context)
@@ -160,6 +172,11 @@ export async function initCommand(options: any) {
     .rpc();
 
   await provider.connection.confirmTransaction(tx, "confirmed");
-  console.log('System config initialized successfully. Transaction:', tx);
-  console.log('System config account:', systemConfigAccount.toBase58());
+  
+  console.log('\n🎉 System Initialization Completed Successfully!');
+  console.log('=' .repeat(50));
+  console.log(`📋 Transaction Hash: ${tx}`);
+  console.log(`📍 System Config Account: ${systemConfigAccount.toBase58()}`);
+  console.log(`👤 System Manager: ${systemManager.publicKey.toBase58()}`);
+  console.log('\n✨ Your FlipFlop system is now ready for token operations!');
 }
