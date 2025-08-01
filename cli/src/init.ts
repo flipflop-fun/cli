@@ -1,15 +1,15 @@
 import { AddressLookupTableAccount, AddressLookupTableProgram, Connection, Keypair, PublicKey, SystemProgram, Transaction, sendAndConfirmTransaction } from '@solana/web3.js';
 import { cpSwapConfigAddress, cpSwapProgram, createPoolFeeReceive, LOOKUP_TABLE_ACCOUNT, SYSTEM_MANAGER_ACCOUNT } from './config';
 import { loadKeypairFromBase58, checkAccountExists } from './utils'; // Updated import
-import { SYSTEM_CONFIG_SEEDS } from './constants';
+import { RENT_PROGRAM_ID, SYSTEM_CONFIG_SEEDS } from './constants';
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import { NATIVE_MINT, TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@solana/spl-token';
-import { RENT_PROGRAM_ID, SYSTEM_PROGRAM_ID } from 'raydium-sdk-v2';
 import { ASSOCIATED_PROGRAM_ID } from '@coral-xyz/anchor/dist/cjs/utils/token';
 import sleep from 'sleep-promise';
 import * as anchor from '@coral-xyz/anchor';
 import idl from './idl/fair_mint_token.json';
 import { FairMintToken } from './types/fair_mint_token';
+import { SYSTEM_PROGRAM_ID } from '@coral-xyz/anchor/dist/cjs/native/system';
 
 const createAddressLookupTable = async (
   connection: Connection,

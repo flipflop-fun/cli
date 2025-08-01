@@ -4,11 +4,11 @@ import bs58 from 'bs58';
 import { BN, Program, Provider } from '@coral-xyz/anchor';
 import { FairMintToken } from './types/fair_mint_token';
 import { ASSOCIATED_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@coral-xyz/anchor/dist/cjs/utils/token';
-import { RENT_PROGRAM_ID, SYSTEM_PROGRAM_ID } from 'raydium-sdk-v2';
 import { cpSwapConfigAddress, cpSwapProgram, createPoolFeeReceive } from './config';
 import { ReferralAccountData, RemainingAccount } from './types';
 import { getAssociatedTokenAddress, getAssociatedTokenAddressSync, getOrCreateAssociatedTokenAccount, NATIVE_MINT } from '@solana/spl-token';
-import { CODE_ACCOUNT_SEED, METADATA_SEED, ORACLE_SEED, POOL_AUTH_SEED, POOL_LPMINT_SEED, POOL_SEED, POOL_VAULT_SEED, REFERRAL_CODE_SEED, REFUND_SEEDS, TOKEN_METADATA_PROGRAM_ID } from './constants';
+import { CODE_ACCOUNT_SEED, METADATA_SEED, ORACLE_SEED, POOL_AUTH_SEED, POOL_LPMINT_SEED, POOL_SEED, POOL_VAULT_SEED, REFERRAL_CODE_SEED, REFUND_SEEDS, RENT_PROGRAM_ID, TOKEN_METADATA_PROGRAM_ID } from './constants';
+import { SYSTEM_PROGRAM_ID } from '@coral-xyz/anchor/dist/cjs/native/system';
 
 export const getTokenBalance = async (publicKey: PublicKey, connection: Connection): Promise<number> => {
   const balance = await connection.getTokenAccountBalance(publicKey);

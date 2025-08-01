@@ -2,6 +2,8 @@ import { BN } from '@coral-xyz/anchor';
 import { PublicKey } from '@solana/web3.js';
 import * as anchor from "@coral-xyz/anchor";
 export const TOKEN_METADATA_PROGRAM_ID = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
+export const RENT_PROGRAM_ID = new PublicKey("SysvarRent111111111111111111111111111111111");
+
 export const METADATA_SEED = "metadata";
 export const MINT_SEED = "fair_mint";
 export const CONFIG_DATA_SEED = "config_data";
