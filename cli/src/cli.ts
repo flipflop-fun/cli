@@ -12,9 +12,9 @@ import { displayUrcCommand } from './display-urc';
 const program = new Command();
 
 program
-  .name('solana-tool')
-  .description('A CLI tool for Solana fair mint token operations')
-  .version('1.0.0');
+  .name('flipflop')
+  .description('A CLI tool for Flipflop token operations')
+  .version('1.0.5');
 
 // Add launch subcommand
 program.command('launch')
