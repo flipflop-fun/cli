@@ -1,11 +1,8 @@
-import { Connection, PublicKey, Transaction } from '@solana/web3.js';
-import { Program, AnchorProvider, web3, Wallet } from '@coral-xyz/anchor';
-import { FairMintToken } from './types/fair_mint_token';
-import idl from './idl/fair_mint_token.json';
-import { SYSTEM_MANAGER_ACCOUNT } from './config';
-import { cleanTokenName, getMetadataByMint, loadKeypairFromBase58 } from './utils';
+import { Connection, PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
+import { cleanTokenName, getMetadataByMint, initProvider, loadKeypairFromBase58 } from './utils';
 import { CODE_ACCOUNT_SEED, CONFIG_DATA_SEED, REFERRAL_CODE_SEED, REFERRAL_SEED, SYSTEM_CONFIG_SEEDS } from './constants';
 import { ASSOCIATED_TOKEN_PROGRAM_ID, createAssociatedTokenAccountInstruction, getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from '@solana/spl-token';
+import { CONFIGS, getNetworkType } from './config';
 
 export async function setUrcCommand(options: any) {
   const rpcUrl = options.rpc;
@@ -22,47 +19,32 @@ export async function setUrcCommand(options: any) {
   try {
     // Load keypair and create wallet
     const refAccount = loadKeypairFromBase58(options.keypairBs58);
-    const wallet = {
-      publicKey: refAccount.publicKey,
-      signTransaction: async (tx: Transaction) => {
-        tx.sign(refAccount);
-        return tx;
-      },
-      signAllTransactions: async (txs: Transaction[]) => {
-        txs.forEach(tx => tx.sign(refAccount));
-        return txs;
-      }
-    };
 
-    const provider = new AnchorProvider(rpc, wallet as Wallet, {
-      commitment: 'confirmed',
-    });
-
-    const program = new Program(idl, provider) as Program<FairMintToken>;
+    const { program, provider, programId } = await initProvider(rpc, refAccount);
 
     const [referralAccount] = PublicKey.findProgramAddressSync(
       [Buffer.from(REFERRAL_SEED), mintAccount.toBuffer(), refAccount.publicKey.toBuffer()],
-      program.programId,
+      programId,
     );
 
     const [systemConfigAccount] = PublicKey.findProgramAddressSync(
-      [Buffer.from(SYSTEM_CONFIG_SEEDS), SYSTEM_MANAGER_ACCOUNT.toBuffer()],
-      program.programId
+      [Buffer.from(SYSTEM_CONFIG_SEEDS), (new PublicKey(CONFIGS[getNetworkType(rpcUrl)].systemManagerAccount)).toBuffer()],
+      programId
     );
 
-    const [codeHash] = web3.PublicKey.findProgramAddressSync(
+    const [codeHash] = PublicKey.findProgramAddressSync(
       [Buffer.from(REFERRAL_CODE_SEED), Buffer.from(urc)],
-      program.programId,
+      programId,
     );
 
-    const [codeAccount] = web3.PublicKey.findProgramAddressSync(
+    const [codeAccount] = PublicKey.findProgramAddressSync(
       [Buffer.from(CODE_ACCOUNT_SEED), codeHash.toBuffer()],
-      program.programId,
+      programId,
     );
 
     const [configAccount] = PublicKey.findProgramAddressSync(
       [Buffer.from(CONFIG_DATA_SEED), mintAccount.toBuffer()],
-      program.programId,
+      programId,
     );
 
     const codeAccountInfo = await provider.connection.getAccountInfo(codeAccount);
@@ -85,17 +67,16 @@ export async function setUrcCommand(options: any) {
       payer: refAccount.publicKey,
       referrerAta: referrerAta,
       codeAccount: codeAccount,
-      systemProgram: web3.SystemProgram.programId,
+      systemProgram: SystemProgram.programId,
       tokenProgram: TOKEN_PROGRAM_ID,
       associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
     };
-
     const tokenMetadata = await getMetadataByMint(rpc, mintAccount);
     if (!tokenMetadata.success) {
       console.error(`❌ Failed to get token metadata: ${tokenMetadata.message}`);
       return;
     }
-    
+
     console.log('\n🔗 Setting Referral Code');
     console.log('━'.repeat(50));
     console.log(`URC: ${urc}`);
@@ -104,12 +85,15 @@ export async function setUrcCommand(options: any) {
     
     const _name = cleanTokenName(tokenMetadata.data.name);
     const _symbol = cleanTokenName(tokenMetadata.data.symbol);
+    console.log(`Token Name: ${_name}`);
+    console.log(`Token Symbol: ${_symbol}`);
+    console.log(`Code hash: ${codeHash.toBase58()}`);
     const instructionSetReferrerCode = await program.methods
       .setReferrerCode(_name, _symbol, codeHash.toBuffer())
       .accounts(context)
       .instruction();
     
-    const transaction = new web3.Transaction();
+    const transaction = new Transaction();
     if(!referrerAtaInfo) {
         transaction.add(createAssociatedTokenAccountInstruction(
           refAccount.publicKey,
@@ -119,6 +103,7 @@ export async function setUrcCommand(options: any) {
           TOKEN_PROGRAM_ID
         ));
       }
+
       transaction.add(instructionSetReferrerCode);
       const tx = await provider.sendAndConfirm(transaction, [refAccount]);
       

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import { initCommand } from './init';
+// import { initCommand } from './init';
 import { launchCommand } from './launch';
 import { setUrcCommand } from './set-urc';
 import { displayMintCommand } from './display-mint';
@@ -19,7 +19,7 @@ program
 // Add launch subcommand
 program.command('launch')
   .description('Launch a new token')
-  .option('--rpc <url>', 'RPC endpoint', 'http://127.0.0.1:8899')
+  .option('--rpc <url>', 'RPC endpoint', 'https://api.mainnet-beta.solana.com')
   .option('--name <name>', 'Token name')
   .option('--symbol <symbol>', 'Token symbol')
   .option('--uri <uri>', 'Token URI')
@@ -29,14 +29,14 @@ program.command('launch')
 
 program.command('display-mint')
   .description('Display mint details')
-  .option('--rpc <url>', 'RPC endpoint', 'http://127.0.0.1:8899')
+  .option('--rpc <url>', 'RPC endpoint', 'https://api.mainnet-beta.solana.com')
   .option('--mint <address>', 'Mint account address')
   .action(displayMintCommand);
 
 // Add urc subcommand
 program.command('set-urc')
   .description('Create or update URC code')
-  .option('--rpc <url>', 'RPC endpoint', 'http://127.0.0.1:8899')
+  .option('--rpc <url>', 'RPC endpoint', 'https://api.mainnet-beta.solana.com')
   .option('--mint <address>', 'Mint account address')
   .option('--urc <code>', 'URC code')
   .option('--keypair-bs58 <bs58>', 'Keypair in BS58 format')
@@ -44,14 +44,14 @@ program.command('set-urc')
 
 program.command('display-urc')
   .description('Display URC details')
-  .option('--rpc <url>', 'RPC endpoint', 'http://127.0.0.1:8899')
+  .option('--rpc <url>', 'RPC endpoint', 'https://api.mainnet-beta.solana.com')
   .option('--urc <code>', 'URC code')
   .action(displayUrcCommand);
 
 // Add mint subcommand
 program.command('mint')
   .description('Batch mint tokens')
-  .option('--rpc <url>', 'RPC endpoint', 'http://127.0.0.1:8899')
+  .option('--rpc <url>', 'RPC endpoint', 'https://api.mainnet-beta.solana.com')
   .option('--mint <address>', 'Mint account address')
   .option('--urc <code>', 'URC code')
   .option('--keypair-bs58 <bs58>', 'Keypair in BS58 format')
@@ -60,8 +60,8 @@ program.command('mint')
 // Add init subcommand
 // program.command('init')
 //   .description('Initialize contracts including LUT and system config, only by Flipflop program deployer')
-//   .option('--rpc <url>', 'RPC endpoint', 'http://127.0.0.1:8899')
-//   .option('--keypair-base58 <base58>', 'Keypair in base58 format')
+//   .option('--rpc <url>', 'RPC endpoint', 'https://api.mainnet-beta.solana.com')
+//   .option('--keypair-bs58 <bs58>', 'Keypair in BS58 format')
 //   .action(initCommand);
 
 program.parse();

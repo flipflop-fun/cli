@@ -1,5 +1,7 @@
+import { AnchorProvider, Program } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
 import BN from "bn.js";
+import { FairMintToken } from "./types/fair_mint_token";
 
 // Basic types
 export interface KeypairInfo {
@@ -25,4 +27,10 @@ export interface ReferralAccountData {
     mint: PublicKey;
     activeTimestamp: BN;
     isProcessing: boolean;
+}
+
+export interface ProviderAndProgram {
+  program: Program<FairMintToken>;
+  provider: AnchorProvider;
+  programId: PublicKey;
 }

@@ -1,15 +1,11 @@
 import { AddressLookupTableAccount, AddressLookupTableProgram, Connection, Keypair, PublicKey, SystemProgram, Transaction, sendAndConfirmTransaction } from '@solana/web3.js';
-import { cpSwapConfigAddress, cpSwapProgram, createPoolFeeReceive, LOOKUP_TABLE_ACCOUNT, SYSTEM_MANAGER_ACCOUNT } from './config';
-import { loadKeypairFromBase58, checkAccountExists } from './utils'; // Updated import
+import { loadKeypairFromBase58, checkAccountExists, initProvider } from './utils'; // Updated import
 import { RENT_PROGRAM_ID, SYSTEM_CONFIG_SEEDS } from './constants';
-import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import { NATIVE_MINT, TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { ASSOCIATED_PROGRAM_ID } from '@coral-xyz/anchor/dist/cjs/utils/token';
 import sleep from 'sleep-promise';
-import * as anchor from '@coral-xyz/anchor';
-import idl from './idl/fair_mint_token.json';
-import { FairMintToken } from './types/fair_mint_token';
 import { SYSTEM_PROGRAM_ID } from '@coral-xyz/anchor/dist/cjs/native/system';
+import { CONFIGS, getNetworkType } from './config';
 
 const createAddressLookupTable = async (
   connection: Connection,
@@ -56,6 +52,8 @@ const createLookupTable = async (
   connection: Connection,
   payer: Keypair,
 ) => {
+  const rpc = connection.rpcEndpoint;
+  const network = getNetworkType(rpc);
   const addresses: PublicKey[] = [
     TOKEN_PROGRAM_ID,
     TOKEN_2022_PROGRAM_ID,
@@ -63,9 +61,9 @@ const createLookupTable = async (
     RENT_PROGRAM_ID,
     ASSOCIATED_PROGRAM_ID,
     NATIVE_MINT,
-    cpSwapProgram,
-    cpSwapConfigAddress,
-    createPoolFeeReceive,
+    new PublicKey(CONFIGS[network].cpSwapProgram),
+    new PublicKey(CONFIGS[network].cpSwapConfigAddress),
+    new PublicKey(CONFIGS[network].createPoolFeeReceive),
   ];
 
   // 2. Create LUT
@@ -83,36 +81,20 @@ export async function initCommand(options: any) {
   const rpc = new Connection(rpcUrl, 'confirmed');
 
   // Use keypair from command line argument
-  if (!options.keypairBase58) {
-    console.error('❌ Error: Missing --keypair-base58 parameter');
-    console.log('💡 Usage: flipflop init --keypair-base58 <your_base58_keypair>');
+  if (!options.keypairBs58) {
+    console.error('❌ Error: Missing --keypair-bs58 parameter');
+    console.log('💡 Usage: flipflop init --keypair-bs58 <your_bs58_keypair>');
     return;
   }
   
-  const systemManager = loadKeypairFromBase58(options.keypairBase58);
-  
-  const wallet = {
-    publicKey: systemManager.publicKey,
-    signTransaction: async (tx: Transaction) => {
-      tx.sign(systemManager);
-      return tx;
-    },
-    signAllTransactions: async (txs: Transaction[]) => {
-      txs.forEach(tx => tx.sign(systemManager));
-      return txs;
-    }
-  };
-  
-  const provider = new AnchorProvider(rpc, wallet as anchor.Wallet, {
-    commitment: 'confirmed',
-  });
-  
-  const program = new Program(idl, provider) as Program<FairMintToken>;
+  const systemManager = loadKeypairFromBase58(options.keypairBs58);
+
+  const { program, provider, programId } = await initProvider(rpc, systemManager);
 
   console.log('\n🔍 Checking Address Lookup Table...');
   let lookupTableAddress: PublicKey;
   try {
-    lookupTableAddress = new PublicKey(LOOKUP_TABLE_ACCOUNT || '');
+    lookupTableAddress = new PublicKey(CONFIGS[getNetworkType(rpcUrl)].lookupTableAccount || '');
     const accountInfo = await provider.connection.getParsedAccountInfo(lookupTableAddress);
     if (!accountInfo.value) {
       console.log('⚠️  LUT account does not exist, creating new LUT...');
@@ -140,8 +122,8 @@ export async function initCommand(options: any) {
   }
 
   const [systemConfigAccount] = PublicKey.findProgramAddressSync(
-    [Buffer.from(SYSTEM_CONFIG_SEEDS), SYSTEM_MANAGER_ACCOUNT.toBuffer()],
-    program.programId
+    [Buffer.from(SYSTEM_CONFIG_SEEDS), (new PublicKey(CONFIGS[getNetworkType(rpcUrl)].systemManagerAccount)).toBuffer()],
+    programId
   );
   console.log(`📍 System Config PDA: ${systemConfigAccount.toBase58()}`);
   

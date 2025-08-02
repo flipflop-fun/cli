@@ -1,9 +1,5 @@
-import { Connection, PublicKey } from '@solana/web3.js';
-import { getURCDetails } from './utils';
-import { AnchorProvider, Program } from '@coral-xyz/anchor';
-import * as anchor from '@coral-xyz/anchor';
-import idl from './idl/fair_mint_token.json';
-import { FairMintToken } from './types/fair_mint_token';
+import { Connection } from '@solana/web3.js';
+import { getURCDetails, initProviderNoSigner } from './utils';
 
 // Display URC command handler
 export async function displayUrcCommand(options: any) {
@@ -11,16 +7,7 @@ export async function displayUrcCommand(options: any) {
   const urc = options.urc;
   const rpc = new Connection(rpcUrl, 'confirmed');
 
-  const wallet = {
-    publicKey: PublicKey.default,
-    signTransaction: async (tx: any) => tx,
-    signAllTransactions: async (txs: any[]) => txs,
-  };
-
-  const provider = new AnchorProvider(rpc, wallet as anchor.Wallet, {
-    commitment: 'confirmed',
-  });
-  const program = new Program(idl, provider) as Program<FairMintToken>;
+  const { program } = await initProviderNoSigner(rpc);
 
   try {
     const urcDetails = await getURCDetails(rpc, program, urc);

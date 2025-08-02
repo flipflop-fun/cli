@@ -1,14 +1,80 @@
-import { Connection, Keypair, PublicKey, VersionedTransaction, TransactionMessage, AddressLookupTableAccount, ComputeBudgetProgram } from '@solana/web3.js';
+import { Connection, Keypair, PublicKey, VersionedTransaction, TransactionMessage, AddressLookupTableAccount, ComputeBudgetProgram, Transaction } from '@solana/web3.js';
 import fs from 'fs';
 import bs58 from 'bs58';
-import { BN, Program, Provider } from '@coral-xyz/anchor';
+import { AnchorProvider, BN, Program, Provider, Wallet } from '@coral-xyz/anchor';
 import { FairMintToken } from './types/fair_mint_token';
 import { ASSOCIATED_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@coral-xyz/anchor/dist/cjs/utils/token';
-import { cpSwapConfigAddress, cpSwapProgram, createPoolFeeReceive } from './config';
-import { ReferralAccountData, RemainingAccount } from './types';
+import { ProviderAndProgram, ReferralAccountData, RemainingAccount } from './types';
 import { getAssociatedTokenAddress, getAssociatedTokenAddressSync, getOrCreateAssociatedTokenAccount, NATIVE_MINT } from '@solana/spl-token';
 import { CODE_ACCOUNT_SEED, METADATA_SEED, ORACLE_SEED, POOL_AUTH_SEED, POOL_LPMINT_SEED, POOL_SEED, POOL_VAULT_SEED, REFERRAL_CODE_SEED, REFUND_SEEDS, RENT_PROGRAM_ID, TOKEN_METADATA_PROGRAM_ID } from './constants';
 import { SYSTEM_PROGRAM_ID } from '@coral-xyz/anchor/dist/cjs/native/system';
+import { CONFIGS, getNetworkType } from './config';
+
+export const initProvider = async (rpc: Connection, account: Keypair): Promise<ProviderAndProgram> => {
+    const wallet = {
+    publicKey: account.publicKey,
+    signTransaction: async (tx: Transaction) => {
+      tx.sign(account);
+      return tx;
+    },
+    signAllTransactions: async (txs: Transaction[]) => {
+      txs.forEach(tx => tx.sign(account));
+      return txs;
+    }
+  };
+  
+  const provider = new AnchorProvider(rpc, wallet as Wallet, {
+    commitment: 'confirmed',
+  });
+  
+  try {
+    const networkType = getNetworkType(rpc.rpcEndpoint);
+    const idlModule = await import(`./idl/fair_mint_token_${networkType}.json`);
+    const idl = idlModule.default || idlModule;
+    const program = new Program(idl, provider) as Program<FairMintToken>;
+
+    const config = CONFIGS[getNetworkType(rpc.rpcEndpoint)];
+    const programId = new PublicKey(config.programId);
+    
+    return {
+      program,
+      provider,
+      programId,
+    }
+  } catch (error) {
+    throw new Error(`Failed to load IDL for network ${getNetworkType(rpc.rpcEndpoint)}: ${error}`);
+  }
+}
+
+export const initProviderNoSigner = async (rpc: Connection): Promise<ProviderAndProgram> => {
+    const wallet = {
+    publicKey: PublicKey.default,
+    signTransaction: async (tx: any) => tx,
+    signAllTransactions: async (txs: any[]) => txs,
+  };
+  
+  const provider = new AnchorProvider(rpc, wallet as Wallet, {
+    commitment: 'confirmed',
+  });
+  
+  try {
+    const networkType = getNetworkType(rpc.rpcEndpoint);
+    const idlModule = await import(`./idl/fair_mint_token_${networkType}.json`);
+    const idl = idlModule.default || idlModule;
+    const program = new Program(idl, provider) as Program<FairMintToken>;
+      
+    const config = CONFIGS[getNetworkType(rpc.rpcEndpoint)];
+    const programId = new PublicKey(config.programId);
+
+    return {
+      program,
+      provider,
+      programId,
+    }
+  } catch (error) {
+    throw new Error(`Failed to load IDL for network ${getNetworkType(rpc.rpcEndpoint)}: ${error}`);
+  }
+}
 
 export const getTokenBalance = async (publicKey: PublicKey, connection: Connection): Promise<number> => {
   const balance = await connection.getTokenAccountBalance(publicKey);
@@ -99,7 +165,7 @@ export const parseConfigData = async (program: Program<FairMintToken> , configAc
           targetSecondsPerEpoch: configData.targetSecondsPerEpoch.toNumber(),
           reduceRatio: configData.reduceRatio,
           tokenVault: configData.tokenVault.toBase58(),
-  
+          liquidityTokensRatio: configData.liquidityTokensRatio,
           supply: configData.mintStateData.supply.toNumber() / 10**9,
           currentEra: configData.mintStateData.currentEra,
           currentEpoch: configData.mintStateData.currentEpoch.toNumber(),
@@ -285,9 +351,10 @@ export const mintBy = async (
     TOKEN_PROGRAM_ID
   );
 
+  const programId = new PublicKey(CONFIGS[getNetworkType(connection.rpcEndpoint)].programId);
   const [refundAccount] = PublicKey.findProgramAddressSync(
     [Buffer.from(REFUND_SEEDS), mintAccount.toBuffer(), account.publicKey.toBuffer()],
-    program.programId,
+    programId,
   );
 
   const accountInfo = await connection.getAccountInfo(referrerAta);
@@ -330,7 +397,12 @@ export const mintBy = async (
     [token0Mint, token1Mint] = [token1Mint, token0Mint];
     [token0Program, token1Program] = [token1Program, token0Program];
   }
-  
+  const rpcUrl = connection.rpcEndpoint;
+  const network = getNetworkType(rpcUrl);
+  const cpSwapProgram = new PublicKey(CONFIGS[network].cpSwapProgram);
+  const cpSwapConfigAddress = new PublicKey(CONFIGS[network].cpSwapConfigAddress);
+  const createPoolFeeReceive = new PublicKey(CONFIGS[network].createPoolFeeReceive);
+
   const [authority] = getAuthAddress(cpSwapProgram);
   const [poolAddress] = getPoolAddress(cpSwapConfigAddress, token0Mint, token1Mint, cpSwapProgram);
   const [lpMintAddress] = getPoolLpMintAddress(poolAddress, cpSwapProgram);
@@ -610,9 +682,10 @@ export const getReferralDataByCodeHash = async (
   program: Program<FairMintToken>,
   codeHash: PublicKey
 ): Promise<any> => {
+  const programId = new PublicKey(CONFIGS[getNetworkType(connection.rpcEndpoint)].programId);
   const [codeAccountPda] = PublicKey.findProgramAddressSync(
     [Buffer.from(CODE_ACCOUNT_SEED), codeHash.toBuffer()],
-    program.programId,
+    programId,
   );
   const codeAccountInfo = await connection.getAccountInfo(codeAccountPda);
   if (!codeAccountInfo) {
@@ -642,9 +715,10 @@ export const getReferralDataByCodeHash = async (
 }
 
 export const getURCDetails = async (connection: Connection, program: Program<FairMintToken>, urcCode: string): Promise<ReferralAccountData> => {
+  const programId = new PublicKey(CONFIGS[getNetworkType(connection.rpcEndpoint)].programId);
   const [codeHash] = PublicKey.findProgramAddressSync(
     [Buffer.from(REFERRAL_CODE_SEED), Buffer.from(urcCode)],
-    program.programId,
+    programId,
   );
   const _referralData = await getReferralDataByCodeHash(connection, program, codeHash);
   if (!_referralData.success) {

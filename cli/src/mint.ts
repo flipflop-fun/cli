@@ -1,10 +1,7 @@
-import { Connection, PublicKey, Transaction } from '@solana/web3.js';
-import { Program, AnchorProvider, web3, Wallet } from '@coral-xyz/anchor';
-import { FairMintToken } from './types/fair_mint_token';
-import idl from './idl/fair_mint_token.json';
-import { LOOKUP_TABLE_ACCOUNT, SYSTEM_MANAGER_ACCOUNT } from './config';
+import { Connection, PublicKey } from '@solana/web3.js';
 import { CONFIG_DATA_SEED, REFERRAL_SEED, SYSTEM_CONFIG_SEEDS, REFERRAL_CODE_SEED } from './constants';
-import { cleanTokenName, getMetadataByMint, getURCDetails, loadKeypairFromBase58, mintBy } from './utils';
+import { cleanTokenName, getMetadataByMint, getURCDetails, initProvider, loadKeypairFromBase58, mintBy } from './utils';
+import { CONFIGS, getNetworkType } from './config';
 
 interface MintOptions {
   rpc: string;
@@ -15,9 +12,10 @@ interface MintOptions {
 
 export async function mintCommand(options: MintOptions) {
   try {
-    const rpc = new Connection(options.rpc || 'http://127.0.0.1:8899');
+    const rpc = new Connection(options.rpc || 'https://api.mainnet-beta.solana.com');
     const urc = options.urc;
     const mintAccount = new PublicKey(options.mint);
+    const config = CONFIGS[getNetworkType(options.rpc)];
 
     // Validate required parameters
     if (!options.keypairBs58) {
@@ -37,35 +35,20 @@ export async function mintCommand(options: MintOptions) {
     
     // Load keypair and create wallet
     const minter = loadKeypairFromBase58(options.keypairBs58);
-    const wallet = {
-      publicKey: minter.publicKey,
-      signTransaction: async (tx: Transaction) => {
-        tx.sign(minter);
-        return tx;
-      },
-      signAllTransactions: async (txs: Transaction[]) => {
-        txs.forEach(tx => tx.sign(minter));
-        return txs;
-      }
-    };
 
-    const provider = new AnchorProvider(rpc, wallet as Wallet, {
-      commitment: 'confirmed',
-    });
-
-    const program = new Program(idl, provider) as Program<FairMintToken>;
+    const { program, provider, programId } = await initProvider(rpc, minter);
 
     console.log('Processing mint request...');
 
     const referrerAccount = await getURCDetails(rpc, program, urc);
     const [referralAccount] = PublicKey.findProgramAddressSync(
       [Buffer.from(REFERRAL_SEED), mintAccount.toBuffer(), referrerAccount.referrerMain.toBuffer()],
-      program.programId,
+      programId,
     );
 
     const [systemConfigAccount] = PublicKey.findProgramAddressSync(
-      [Buffer.from(SYSTEM_CONFIG_SEEDS), SYSTEM_MANAGER_ACCOUNT.toBuffer()],
-      program.programId
+      [Buffer.from(SYSTEM_CONFIG_SEEDS), new PublicKey(config.systemManagerAccount).toBuffer()],
+      programId
     );
 
     const systemConfigData = await program.account.systemConfigData.fetch(systemConfigAccount);
@@ -73,12 +56,12 @@ export async function mintCommand(options: MintOptions) {
 
     const [configAccount] = PublicKey.findProgramAddressSync(
       [Buffer.from(CONFIG_DATA_SEED), mintAccount.toBuffer()],
-      program.programId,
+      programId,
     );
 
-    const [codeHash] = web3.PublicKey.findProgramAddressSync(
+    const [codeHash] = PublicKey.findProgramAddressSync(
       [Buffer.from(REFERRAL_CODE_SEED), Buffer.from(urc)],
-      program.programId,
+      programId,
     );
 
     const metadataData = await getMetadataByMint(rpc, mintAccount);
@@ -102,7 +85,7 @@ export async function mintCommand(options: MintOptions) {
       minter, // minter
       systemConfigAccount,
       provider.connection,
-      LOOKUP_TABLE_ACCOUNT,
+      new PublicKey(config.lookupTableAccount),
       protocolFeeAccount
     );
     
@@ -114,7 +97,16 @@ export async function mintCommand(options: MintOptions) {
     console.log('Tokens minted successfully!');
     
     if (result.tx) {
+      console.log('Mint operation details:');
+      console.log("=".repeat(40));
+      console.log(`Mint: ${mintAccount}`);
+      console.log(`URC: ${urc}`);
+      console.log(`Owner: ${minter.publicKey.toBase58()}`)
+      console.log(`Token Account: ${result.tokenAccount}`)
       console.log(`Transaction Hash: ${result.tx}`);
+      console.log('')
+      console.log(`Check your token balance by:\n> spl-token balance ${mintAccount} --owner ${minter.publicKey.toBase58()}`)
+      console.log("=".repeat(40));
     }
   } catch (error) {
     console.error('Error: Mint operation failed -', error);

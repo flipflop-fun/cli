@@ -1,17 +1,8 @@
 import { Connection, PublicKey, Transaction } from '@solana/web3.js';
-import { 
-  SYSTEM_MANAGER_ACCOUNT, 
-  getNetworkType 
-} from './config';
-import { loadKeypairFromBase58, parseConfigData } from './utils';
+import { initProvider, loadKeypairFromBase58, parseConfigData } from './utils';
 import { MINT_SEED, CONFIG_DATA_SEED, SYSTEM_CONFIG_SEEDS, METADATA_SEED, TOKEN_METADATA_PROGRAM_ID, TOKEN_PARAMS } from './constants';
-import { AnchorProvider, Program } from '@coral-xyz/anchor';
 import { getAssociatedTokenAddress, NATIVE_MINT, TOKEN_PROGRAM_ID } from '@solana/spl-token';
-import * as anchor from '@coral-xyz/anchor';
-import idl from './idl/fair_mint_token.json';
-import { FairMintToken } from './types/fair_mint_token';
-
-import { program as cliProgram } from 'commander';
+import { CONFIGS, getNetworkType } from './config';
 
 // Token metadata interface
 interface TokenMetadata {
@@ -32,9 +23,10 @@ interface LaunchOptions {
 
 // Launch token command handler
 export async function launchCommand(options: LaunchOptions) {
-  const rpcUrl = options.rpc || 'http://127.0.0.1:8899';
+  const rpcUrl = options.rpc || 'https://api.mainnet-beta.solana.com';
   const type = options.tokenType;
   const rpc = new Connection(rpcUrl, 'confirmed');
+  const config = CONFIGS[getNetworkType(rpcUrl)];
 
   // Validate required parameters
   if (!options.keypairBs58) {
@@ -50,23 +42,8 @@ export async function launchCommand(options: LaunchOptions) {
   try {
     // Load keypair and create wallet
     const creator = loadKeypairFromBase58(options.keypairBs58);
-    const wallet = {
-      publicKey: creator.publicKey,
-      signTransaction: async (tx: Transaction) => {
-        tx.sign(creator);
-        return tx;
-      },
-      signAllTransactions: async (txs: Transaction[]) => {
-        txs.forEach(tx => tx.sign(creator));
-        return txs;
-      }
-    };
 
-    const provider = new AnchorProvider(rpc, wallet as anchor.Wallet, {
-      commitment: 'confirmed',
-    });
-
-    const program = new Program(idl, provider) as Program<FairMintToken>;
+    const { program, provider, programId } = await initProvider(rpc, creator);
 
     // Token parameters
     const tokenName = options.name;
@@ -84,20 +61,20 @@ export async function launchCommand(options: LaunchOptions) {
     };
 
     const [systemConfigAccount] = PublicKey.findProgramAddressSync(
-      [Buffer.from(SYSTEM_CONFIG_SEEDS), SYSTEM_MANAGER_ACCOUNT.toBuffer()],
-      program.programId
+      [Buffer.from(SYSTEM_CONFIG_SEEDS), new PublicKey(config.systemManagerAccount).toBuffer()],
+      programId
     );
 
     const systemConfigData = await program.account.systemConfigData.fetch(systemConfigAccount);
     const protocolFeeAccount = systemConfigData.protocolFeeAccount;
     const [mintAccount] = PublicKey.findProgramAddressSync(
       [Buffer.from(MINT_SEED), Buffer.from(metadata.name), Buffer.from(metadata.symbol.toLowerCase())],
-      program.programId
+      programId
     );
     
     const [configAccount] = PublicKey.findProgramAddressSync(
       [Buffer.from(CONFIG_DATA_SEED), mintAccount.toBuffer()],
-      program.programId,
+      programId,
     );
 
     // Create medatata PDA
@@ -115,17 +92,6 @@ export async function launchCommand(options: LaunchOptions) {
       console.log('\n⚠️  Token Already Exists');
       console.log('━'.repeat(50));
       console.log(`Mint Address: ${mintAccount.toBase58()}`);
-      
-      const configData = await parseConfigData(program, configAccount);
-      if (configData) {
-        console.log('\n📊 Token Configuration');
-        console.log('━'.repeat(50));
-        console.log(`Name: ${configData.name || 'N/A'}`);
-        console.log(`Symbol: ${configData.symbol || 'N/A'}`);
-        console.log(`Max Supply: ${configData.maxSupply?.toLocaleString() || 'N/A'}`);
-        console.log(`Current Supply: ${configData.supply?.toLocaleString() || 'N/A'}`);
-        console.log(`Admin: ${configData.admin || 'N/A'}`);
-      }
       return;
     }
 
