@@ -1,5 +1,5 @@
 import { Connection, PublicKey, Transaction } from '@solana/web3.js';
-import { initProvider, loadKeypairFromBase58, parseConfigData } from './utils';
+import { initProvider, loadKeypairFromBase58, loadKeypairFromFile, parseConfigData } from './utils';
 import { MINT_SEED, CONFIG_DATA_SEED, SYSTEM_CONFIG_SEEDS, METADATA_SEED, TOKEN_METADATA_PROGRAM_ID, TOKEN_PARAMS } from './constants';
 import { getAssociatedTokenAddress, NATIVE_MINT, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { CONFIGS, getNetworkType } from './config';
@@ -19,6 +19,7 @@ interface LaunchOptions {
   uri?: string;
   rpc?: string;
   keypairBs58?: string;
+  keypairFile?: string;
 }
 
 // Launch token command handler
@@ -29,8 +30,8 @@ export async function launchCommand(options: LaunchOptions) {
   const config = CONFIGS[getNetworkType(rpcUrl)];
 
   // Validate required parameters
-  if (!options.keypairBs58) {
-    console.error('❌ Error: Missing --keypair-bs58 parameter');
+  if (!options.keypairBs58 && !options.keypairFile) {
+    console.error('❌ Error: Missing --keypair-bs58 or --keypair-file parameter');
     return;
   }
 
@@ -40,8 +41,10 @@ export async function launchCommand(options: LaunchOptions) {
   }
 
   try {
-    // Load keypair and create wallet
-    const creator = loadKeypairFromBase58(options.keypairBs58);
+    // Load keypair and create wallet (keypair-file takes priority)
+    const creator = options.keypairFile 
+      ? loadKeypairFromFile(options.keypairFile)
+      : loadKeypairFromBase58(options.keypairBs58!);
 
     const { program, provider, programId } = await initProvider(rpc, creator);
 

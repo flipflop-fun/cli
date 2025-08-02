@@ -1,5 +1,5 @@
 import { Connection, PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
-import { cleanTokenName, getMetadataByMint, initProvider, loadKeypairFromBase58 } from './utils';
+import { cleanTokenName, getMetadataByMint, initProvider, loadKeypairFromBase58, loadKeypairFromFile } from './utils';
 import { CODE_ACCOUNT_SEED, CONFIG_DATA_SEED, REFERRAL_CODE_SEED, REFERRAL_SEED, SYSTEM_CONFIG_SEEDS } from './constants';
 import { ASSOCIATED_TOKEN_PROGRAM_ID, createAssociatedTokenAccountInstruction, getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { CONFIGS, getNetworkType } from './config';
@@ -11,14 +11,16 @@ export async function setUrcCommand(options: any) {
   const mintAccount = new PublicKey(options.mint);
 
   // Validate required parameters
-  if (!options.keypairBs58) {
-    console.error('❌ Error: Missing --keypair-bs58 parameter');
+  if (!options.keypairBs58 && !options.keypairFile) {
+    console.error('❌ Error: Missing --keypair-bs58 or --keypair-file parameter');
     return;
   }
 
   try {
-    // Load keypair and create wallet
-    const refAccount = loadKeypairFromBase58(options.keypairBs58);
+    // Load keypair and create wallet (keypair-file takes priority)
+    const refAccount = options.keypairFile 
+      ? loadKeypairFromFile(options.keypairFile)
+      : loadKeypairFromBase58(options.keypairBs58!);
 
     const { program, provider, programId } = await initProvider(rpc, refAccount);
 

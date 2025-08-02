@@ -25,6 +25,7 @@ program.command('launch')
   .option('--uri <uri>', 'Token URI')
   .option('--token-type <type>', 'Token type (meme or standard)', 'meme')
   .option('--keypair-bs58 <bs58>', 'Keypair in BS58 format')
+  .option('--keypair-file <pathfile>', 'Path to keypair file (Array format)')
   .action(launchCommand);
 
 program.command('display-mint')
@@ -40,6 +41,7 @@ program.command('set-urc')
   .option('--mint <address>', 'Mint account address')
   .option('--urc <code>', 'URC code')
   .option('--keypair-bs58 <bs58>', 'Keypair in BS58 format')
+  .option('--keypair-file <pathfile>', 'Path to keypair file (Array format)')
   .action(setUrcCommand);
 
 program.command('display-urc')
@@ -55,6 +57,7 @@ program.command('mint')
   .option('--mint <address>', 'Mint account address')
   .option('--urc <code>', 'URC code')
   .option('--keypair-bs58 <bs58>', 'Keypair in BS58 format')
+  .option('--keypair-file <pathfile>', 'Path to keypair file (Array format)')
   .action(mintCommand);
 
 // Add init subcommand
@@ -62,6 +65,7 @@ program.command('mint')
 //   .description('Initialize contracts including LUT and system config, only by Flipflop program deployer')
 //   .option('--rpc <url>', 'RPC endpoint', 'https://api.mainnet-beta.solana.com')
 //   .option('--keypair-bs58 <bs58>', 'Keypair in BS58 format')
+//   .option('--keypair-file <path>', 'Path to keypair file (Array format)')
 //   .action(initCommand);
 
 program.parse();

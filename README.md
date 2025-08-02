@@ -1,88 +1,78 @@
 # FlipFlop CLI ✨
 
-## CLI Commands
+A command-line interface for Flipflop token operations.
 
-### 🚀 Launch a token
-
-```bash
-flipflop launch --name <token_name> --symbol <token_symbol> --keypair-bs58 <deployer_base58_keypair> --rpc http://127.0.0.1:8899
-```
-A new token will be deployed. You can find the `mint account`, `config account` and a list of all token details.
-
-### 🔍 Display mint details
+## Installation
 
 ```bash
-flipflop display-mint --mint <mint_account> --rpc http://127.0.0.1:8899
+npm install -g @flipflop-sdk/cli
 ```
 
-### 🎯 Set URC
+## Usage
+
+### Authentication
+
+The CLI supports two ways to provide your keypair:
+
+1. **Base58 format**: Use `--keypair-bs58` with your private key in base58 format
+2. **File format**: Use `--keypair-file` with path to a JSON file containing your private key as an array of 64 numbers
+
+**Note**: If both parameters are provided, `--keypair-file` takes priority.
+
+### Commands
+
+#### Launch a new token
 
 ```bash
-flipflop set-urc --mint <mint_account> --urc <urc_code> --keypair-bs58 <urc creator's base58 keypair> --rpc http://127.0.0.1:8899
+flipflop launch --name "MyToken" --symbol "MTK" --keypair-file ./keypair.json
+# or
+flipflop launch --name "MyToken" --symbol "MTK" --keypair-bs58 "your_base58_private_key"
 ```
 
-### 🔧 Display URC
+#### Set URC code
 
 ```bash
-flipflop display-urc --urc <urc_code> --rpc http://127.0.0.1:8899
+flipflop set-urc --mint <mint_address> --urc "mycode" --keypair-file ./keypair.json
+# or
+flipflop set-urc --mint <mint_address> --urc "mycode" --keypair-bs58 "your_base58_private_key"
 ```
 
-### 💎 Mint tokens
+#### Mint tokens
 
 ```bash
-flipflop mint --mint <mint_account> --urc <urc_code> --keypair-bs58 <minter's base58 keypair> --rpc http://127.0.0.1:8899
+flipflop mint --mint <mint_address> --urc "mycode" --keypair-file ./keypair.json
+# or
+flipflop mint --mint <mint_address> --urc "mycode" --keypair-bs58 "your_base58_private_key"
 ```
 
-## 🎭 Example
+#### Display mint information
 
-### Account Setup
-
-Let's say, we have 3 accounts:
-
-- **#1 Deployer**:
-  ```
-  pubkey: dety9BLfU3EvouTAfXpZNisULXAGMRnpjEANPq7duAp
-  prikey: 3HtSPuKFa1Df9pgdpqnMZoa4cMkLnh3tbAuXR9aeJY9WSWTUtXvPHUMyzNRjyN9sRF586T7fLdzhNLM4rdVpW4MW
-  ```
-
-- **#2 URC Provider**:
-  ```
-  pubkey: urq59pTdKGN9XMzfKUpj7oichcurNAAeMJJTapBKDWY
-  prikey: MpW2stfit1AswiLCwdGsSTG3Z8DFsBrmmbPZyiDfm5jDaEuPfVP7EANqiVXQ97Nibqx5m2KaKSrxqc917J3jwqi
-  ```
-
-- **#3 Minter**:
-  ```
-  pubkey: mi4AEZ4Q9CgKcwNsiraa1sAEUMaxsTLz42SPew3cYaa
-  prikey: jtqvhi1REtpMkysr3Z8L8RbvodDDXGpaTu7PVLWtamNMvP8zVidSUiPPgusYKgceRya6tzhd2CeFMeuNwZqcKVx
-  ```
-
-Send some SOL to above accounts for gas fee and minting fee.
-
-### 🎪 Step-by-step flow
-
-#### 1. Launch a token by deployer, say token name is "Trump Token", and symbol is "TRP"
 ```bash
-flipflop launch --name "Trump Token" --symbol "TRP" --keypair-bs58 3HtSPuKFa1Df9pgdpqnMZoa4cMkLnh3tbAuXR9aeJY9WSWTUtXvPHUMyzNRjyN9sRF586T7fLdzhNLM4rdVpW4MW
-```
-The mint address: `Ca8hEwpmXWmaheHF9Pitmo6pB1XvbSQtEFpVJJqddNz5`. As the mint account depends on the token name and symbol, it will be same if token name and symbol are same.
-
-#### 2. Check the mint details
-```bash
-flipflop display-mint --mint Ca8hEwpmXWmaheHF9Pitmo6pB1XvbSQtEFpVJJqddNz5
+flipflop display-mint --mint <mint_address>
 ```
 
-#### 3. Set URC by URC provider, say "TRP_URC"
+#### Display URC information
+
 ```bash
-flipflop set-urc --mint Ca8hEwpmXWmaheHF9Pitmo6pB1XvbSQtEFpVJJqddNz5 --urc TRP_URC --keypair-bs58 MpW2stfit1AswiLCwdGsSTG3Z8DFsBrmmbPZyiDfm5jDaEuPfVP7EANqiVXQ97Nibqx5m2KaKSrxqc917J3jwqi
+flipflop display-urc --urc "mycode"
 ```
 
-#### 4. Mint token by minter with URC: "TRP_URC"
-```bash
-flipflop mint --mint Ca8hEwpmXWmaheHF9Pitmo6pB1XvbSQtEFpVJJqddNz5 --urc TRP_URC --keypair-bs58 jtqvhi1REtpMkysr3Z8L8RbvodDDXGpaTu7PVLWtamNMvP8zVidSUiPPgusYKgceRya6tzhd2CeFMeuNwZqcKVx
+### Keypair File Format
+
+The keypair file should be a JSON file containing an array of 64 numbers representing your private key:
+
+```json
+[174, 47, ..., 238, 135]
 ```
 
-#### 5. Check the balance of SPL-token
-```bash
-spl-token accounts --owner mi4AEZ4Q9CgKcwNsiraa1sAEUMaxsTLz42SPew3cYaa
-```
+### Options
+
+- `--rpc <url>`: RPC endpoint (default: https://api.mainnet-beta.solana.com)
+- `--keypair-bs58 <bs58>`: Keypair in base58 format
+- `--keypair-file <path>`: Path to keypair file (JSON array format)
+- `--name <name>`: Token name (for launch command)
+- `--symbol <symbol>`: Token symbol (for launch command)
+- `--uri <uri>`: Token metadata URI (for launch command)
+- `--token-type <type>`: Token type - meme or standard (default: meme)
+- `--mint <address>`: Mint account address
+- `--urc <code>`: URC referral code

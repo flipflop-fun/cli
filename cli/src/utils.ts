@@ -83,16 +83,24 @@ export const getTokenBalance = async (publicKey: PublicKey, connection: Connecti
 
 // Load keypair from file (supports .pri or JSON format)
 export const loadKeypairFromFile = (filePath: string): Keypair => {
-  const data = fs.readFileSync(filePath, 'utf8');
-  let secretKey: Uint8Array;
-  if (filePath.endsWith('.pri')) {
-    secretKey = bs58.decode(data.trim());
-  } else {
-    const parsed = JSON.parse(data);
-    secretKey = Uint8Array.from(parsed);
+  try {
+    const fileContent = fs.readFileSync(filePath, 'utf8');
+    const secretKeyArray = JSON.parse(fileContent);
+    
+    if (!Array.isArray(secretKeyArray)) {
+      throw new Error('Private key file must contain an array of numbers');
+    }
+    
+    if (secretKeyArray.length !== 64) {
+      throw new Error('Private key array must contain exactly 64 numbers');
+    }
+    
+    const secretKey = new Uint8Array(secretKeyArray);
+    return Keypair.fromSecretKey(secretKey);
+  } catch (error: any) {
+    throw new Error(`Failed to load keypair from file ${filePath}: ${error.message}`);
   }
-  return Keypair.fromSecretKey(secretKey);
-}
+};
 
 // Check if an account exists on-chain
 export const checkAccountExists = async (rpc: Connection, account: PublicKey): Promise<boolean> => {
@@ -103,41 +111,6 @@ export const checkAccountExists = async (rpc: Connection, account: PublicKey): P
 // Get SOL balance
 export const getSolanaBalance = async (rpc: Connection, account: PublicKey): Promise<number> => {
   return await rpc.getBalance(account);
-}
-
-// Other utility functions can be added here, e.g., parseConfigData, etc., based on tests/utils.ts
-// Load all keypairs from file (supports .pri format with multiple accounts)
-export const loadKeypairsFromFile = (filePath: string): Keypair[] => {
-  const data = fs.readFileSync(filePath, 'utf8').trim();
-  const lines = data.split('\n');
-  const keypairs: Keypair[] = [];
-
-  for (const line of lines) {
-    const parts = line.split(',');
-    if (parts.length >= 3) {
-      const publicKey = parts[0].trim();
-      const base58Key = parts[1].trim(); // Second part is base58 private key
-      const arrayKey = parts[2].trim(); // Third part is array form
-      
-      try {
-        // Use base58 key for decoding
-        const secretKey = bs58.decode(base58Key);
-        keypairs.push(Keypair.fromSecretKey(secretKey));
-      } catch (e) {
-        console.warn(`Invalid base58 key for ${publicKey}: ${e}`);
-      }
-    }
-  }
-  return keypairs;
-}
-
-// Helper to load a random keypair from file
-export const loadRandomKeypairFromFile = (filePath: string): Keypair => {
-  const keypairs = loadKeypairsFromFile(filePath);
-  if (keypairs.length === 0) {
-    throw new Error('No valid keypairs found in file');
-  }
-  return keypairs[Math.floor(Math.random() * keypairs.length)];
 }
 
 // Utility to load single keypair from base58 string
