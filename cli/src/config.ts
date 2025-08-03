@@ -17,7 +17,7 @@ export const CONFIGS = {
   devnet: {
     programId: '8GM2N7qQjzMyhqewu8jpDgzUh2BJbtBxSY1WzSFeFm6U',
     lookupTableAccount: 'EebRqpLtUgjX17pJJNNbd6ngtYa34VGa51oYsibwJRXy',
-    systemManagerAccount: 'CXzddeiDgbTTxNnd1apeUGE7E1UAdvBoysf7c271AA79',
+    systemManagerAccount: 'CXzddeiDgbTTxNnd1apeUGE7E1UAdvBoysf7c271AA79', // First system manager account is contract deployer
     cpSwapProgram: 'CPMDWBwJDtYax9qW7AyRuVC19Cc4L4Vcy4n2BHAbHkCW',
     cpSwapConfigAddress: '9zSzfkYy6awexsHvmggeH36pfVUdDGyCcwmjT3AQPBj6',
     createPoolFeeReceive: 'G11FKBRaAkHAKuLCgLM6K6NUc9rTjPAznRCjZifrTQe2'
@@ -25,7 +25,7 @@ export const CONFIGS = {
   mainnet: {
     programId: 'FLipzZfErPUtDQPj9YrC6wp4nRRiVxRkFm3jdFmiPHJV',
     lookupTableAccount: '7DK7pmNkUeeFB3yxt6bJcPCWcG4L3AdCe2WZaBguy9sq',
-    systemManagerAccount: 'DJ3jvpv6k7uhq8h9oVHZck6oY4dQqY1GHaLvCLjSqxaD',
+    systemManagerAccount: 'DJ3jvpv6k7uhq8h9oVHZck6oY4dQqY1GHaLvCLjSqxaD', // First system manager account is contract deployer
     cpSwapProgram: 'CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C',
     cpSwapConfigAddress: 'D4FPEruKEHrG5TenZ2mpDGEfu1iUvTiqBxvpU8HLBvC2',
     createPoolFeeReceive: 'DNXgeM9EiiaAbaWvwjHj9fQQLAX5ZsfHyvmYUNRAdNC8'

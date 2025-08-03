@@ -7,6 +7,7 @@ import { setUrcCommand } from './set-urc';
 import { displayMintCommand } from './display-mint';
 import { mintCommand } from './mint';
 import { displayUrcCommand } from './display-urc';
+import { systemConfigCommand } from './system-config';
 
 // Create the main program
 const program = new Command();
@@ -52,13 +53,20 @@ program.command('display-urc')
 
 // Add mint subcommand
 program.command('mint')
-  .description('Batch mint tokens')
+  .description('Mint tokens')
   .option('--rpc <url>', 'RPC endpoint', 'https://api.mainnet-beta.solana.com')
   .option('--mint <address>', 'Mint account address')
   .option('--urc <code>', 'URC code')
   .option('--keypair-bs58 <bs58>', 'Keypair in BS58 format')
   .option('--keypair-file <pathfile>', 'Path to keypair file (Array format)')
   .action(mintCommand);
+
+// Add show system config
+program.command('system-config')
+  .description('Get system config')
+  .option('--rpc <url>', 'RPC endpoint', 'https://api.mainnet-beta.solana.com')
+  .action(systemConfigCommand);
+
 
 // Add init subcommand
 // program.command('init')
