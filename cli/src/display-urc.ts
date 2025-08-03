@@ -1,22 +1,15 @@
-import { Connection } from '@solana/web3.js';
-import { getURCDetails, initProviderNoSigner } from './utils';
+import { getUrcData } from '@flipflop-sdk/node';
 
 // Display URC command handler
 export async function displayUrcCommand(options: any) {
   const rpcUrl = options.rpc;
   const urc = options.urc;
-  const rpc = new Connection(rpcUrl, 'confirmed');
-
-  const { program } = await initProviderNoSigner(rpc);
 
   try {
-    const urcDetails = await getURCDetails(rpc, program, urc);
-    
-    if (!urcDetails) {
-      console.error('❌ Failed to get URC details');
-      return;
-    }
-
+    const urcDetails = await getUrcData({
+      rpc: rpcUrl,
+      urc,
+    })
     // Display formatted URC information
     console.log('\n🔗 URC (User Referral Code) Details');
     console.log('━'.repeat(50));
