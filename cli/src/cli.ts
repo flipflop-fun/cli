@@ -8,7 +8,7 @@ import { displayMintCommand } from './display-mint';
 import { mintCommand } from './mint';
 import { displayUrcCommand } from './display-urc';
 import { systemConfigCommand } from './system-config';
-
+import { metadataCommand } from './metadata';
 // Create the main program
 const program = new Command();
 
@@ -67,8 +67,17 @@ program.command('system-config')
   .option('--rpc <url>', 'RPC endpoint', 'https://api.mainnet-beta.solana.com')
   .action(systemConfigCommand);
 
+// Add upload metadata and get uri
+program.command('metadata')
+  .description('Upload metadata and get uri')
+  .option('--rpc <url>', 'RPC endpoint', 'https://api.mainnet-beta.solana.com')
+  .option('--name <name>', 'Token name')
+  .option('--symbol <symbol>', 'Token symbol')
+  .option('--description <description>', 'Token description')
+  .option('--image-path <path>', 'Path to image file')
+  .action(metadataCommand);
 
-// Add init subcommand
+  // Add init subcommand
 // program.command('init')
 //   .description('Initialize contracts including LUT and system config, only by Flipflop program deployer')
 //   .option('--rpc <url>', 'RPC endpoint', 'https://api.mainnet-beta.solana.com')

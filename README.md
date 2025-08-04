@@ -57,6 +57,27 @@ flipflop display-mint --mint <mint_address>
 flipflop display-urc --urc "mycode"
 ```
 
+#### View system configuration
+
+```bash
+flipflop system-config
+```
+
+Displays comprehensive system configuration including:
+- System admin address
+- Token count
+- Fee rates and accounts
+- Pool settings
+- System status
+
+#### Upload metadata and get URI
+
+```bash
+flipflop metadata --name "MyToken" --symbol "MTK" --description "My awesome token" --image-path ./token-image.png
+```
+
+Uploads token metadata (including image) and returns the metadata URI for use in token creation.
+
 ### Keypair File Format
 
 The keypair file should be a JSON file containing an array of 64 numbers representing your private key:
@@ -65,14 +86,65 @@ The keypair file should be a JSON file containing an array of 64 numbers represe
 [174, 47, ..., 238, 135]
 ```
 
-### Options
+### Global Options
 
 - `--rpc <url>`: RPC endpoint (default: https://api.mainnet-beta.solana.com)
 - `--keypair-bs58 <bs58>`: Keypair in base58 format
 - `--keypair-file <path>`: Path to keypair file (JSON array format)
-- `--name <name>`: Token name (for launch command)
-- `--symbol <symbol>`: Token symbol (for launch command)
-- `--uri <uri>`: Token metadata URI (for launch command)
+
+### Command-specific Options
+
+#### Launch Command
+- `--name <name>`: Token name (required)
+- `--symbol <symbol>`: Token symbol (required)
+- `--uri <uri>`: Token metadata URI (optional)
 - `--token-type <type>`: Token type - meme or standard (default: meme)
-- `--mint <address>`: Mint account address
-- `--urc <code>`: URC referral code
+
+#### Set URC Command
+- `--mint <address>`: Mint account address (required)
+- `--urc <code>`: URC referral code (required)
+
+#### Mint Command
+- `--mint <address>`: Mint account address (required)
+- `--urc <code>`: URC referral code (required)
+
+#### Display Commands
+- `--mint <address>`: Mint account address (for display-mint)
+- `--urc <code>`: URC code (for display-urc)
+
+#### Metadata Command
+- `--name <name>`: Token name (required)
+- `--symbol <symbol>`: Token symbol (required)
+- `--description <description>`: Token description (required)
+- `--image-path <path>`: Path to image file (required)
+
+## Features
+
+- 🚀 **Token Launch**: Create new tokens with customizable metadata
+- 🎯 **URC Management**: Set and manage referral codes
+- 💰 **Token Minting**: Mint tokens using URC codes
+- 📊 **Information Display**: View mint and URC details
+- ⚙️ **System Configuration**: Check current system settings
+- 🖼️ **Metadata Upload**: Upload token images and metadata
+- 🔐 **Flexible Authentication**: Support for both file and base58 keypairs
+- 🌐 **Multi-network Support**: Configurable RPC endpoints
+
+## Dependencies
+
+This CLI tool uses the following key libraries:
+
+- `@flipflop-sdk/node`: Core FlipFlop SDK functionality
+- `@solana/web3.js`: Solana blockchain interaction
+- `@coral-xyz/anchor`: Solana program framework
+- `commander`: Command-line interface framework
+- `decimal.js`: Precise decimal arithmetic
+- `bs58`: Base58 encoding/decoding
+
+## Requirements
+
+- Node.js >= 16.0.0
+- npm or yarn package manager
+
+## Support
+
+For issues and questions, please visit our [GitHub repository](https://github.com/flipflop-fun/sdk).
