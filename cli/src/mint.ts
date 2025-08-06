@@ -8,6 +8,7 @@ interface MintOptions {
   keypairFile?: string;
   mint: string;
   urc: string;
+  lut?: string;
 }
 
 export async function mintCommand(options: MintOptions) {
@@ -42,6 +43,7 @@ export async function mintCommand(options: MintOptions) {
       minter,
       mint: mintAccount,
       urc: options.urc,
+      lookupTableAccount: options.lut ? new PublicKey(options.lut) : undefined,
     })
 
     if(!result?.success) {

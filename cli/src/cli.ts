@@ -59,6 +59,7 @@ program.command('mint')
   .option('--urc <code>', 'URC code')
   .option('--keypair-bs58 <bs58>', 'Keypair in BS58 format')
   .option('--keypair-file <pathfile>', 'Path to keypair file (Array format)')
+  .option('--lut <address>', 'LookupTableAddress of common addresses')
   .action(mintCommand);
 
 // Add show system config
