@@ -29,6 +29,7 @@ export async function displayMintCommand(options: any) {
     console.log(`Config Account: ${mintData.configAccount.toBase58()}`);
     console.log(`Admin: ${mintData.admin.toBase58()}`);
     console.log(`Token Vault: ${mintData.tokenVault.toBase58()}`);
+    console.log(`WSOL Vault: ${mintData.wsolVault.toBase58()}`);
     console.log('');
     console.log(`Fee Rate: ${(mintData.feeRate * 1).toFixed(2)} SOL`);
     console.log(`Target Eras: ${mintData.targetEras}`);
@@ -45,7 +46,8 @@ export async function displayMintCommand(options: any) {
     console.log(`Current Supply: ${mintData.supply.toLocaleString()}`);
     console.log(`Liquidity Tokens Supply: `, (mintData.supply * mintData.liquidityTokensRatio / 100).toLocaleString());
     console.log(`Minter's Tokens Supply: `, (mintData.supply * (1 - mintData.liquidityTokensRatio / 100)).toLocaleString());
-
+    console.log(`WSOL Vault Balance: `, mintData.wsolVaultBalance.toLocaleString() + " WSOL");
+    console.log('')
     console.log(`Current Era: ${mintData.currentEra}`);
     console.log(`Current Epoch: ${mintData.currentEpoch}`);
     console.log(`Start Time of Current Checkpoint: ${new Date(mintData.startTimestampEpoch * 1000).toLocaleString()}`);
