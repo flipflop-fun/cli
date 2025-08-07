@@ -14,10 +14,11 @@ export async function systemConfigCommand(options: SystemConfigOptions) {
     console.log('━'.repeat(50));
     console.log(`👤 System Admin:              ${systemConfigAccountInfo.admin.toBase58()}`);
     console.log(`🔑 System Config Account:     ${systemConfigAccountInfo.systemConfigAccount.toBase58()}`);
+    console.log(`🔑 Launch Rule Account:       ${systemConfigAccountInfo.launchRuleAccount.toBase58()}`);
+    console.log(`🏦 Protocol Fee Account:      ${systemConfigAccountInfo.protocolFeeAccount.toBase58()}`);
     console.log(`🔢 Token Count:               ${systemConfigAccountInfo.count.toString()}`);
     console.log(`🎯 Referral Usage Max Count:  ${systemConfigAccountInfo.referralUsageMaxCount}`);
     // console.log(`💰 Protocol Fee Rate:         ${(systemConfigAccountInfo.protocolFeeRate * 100).toFixed(2)}%`);
-    console.log(`🏦 Protocol Fee Account:      ${systemConfigAccountInfo.protocolFeeAccount.toBase58()}`);
     console.log(`💸 Refund Fee Rate:           ${(systemConfigAccountInfo.refundFeeRate * 100).toFixed(2)}%`);
     console.log(`⏰ Referrer Reset Interval:   ${systemConfigAccountInfo.referrerResetIntervalSeconds.toString()} seconds`);
     console.log(`🏷️  Update Metadata Fee:       ${(systemConfigAccountInfo.updateMetadataFee).toFixed(2)} SOL`);
