@@ -18,7 +18,7 @@ export async function displayMintCommand(options: any) {
     console.log('\n📊 Token Information');
     console.log('━'.repeat(50));
 
-    console.log(`Mint Address: ${mintData.mint}`);
+    console.log(`Mint Address: ${mintData.mint.toBase58()}`);
     console.log(`Name: ${mintData.name}`);
     console.log(`Symbol: ${mintData.symbol}`);
     console.log(`Metadata URI: ${mintData.uri}`);
@@ -27,14 +27,15 @@ export async function displayMintCommand(options: any) {
     console.log('\n⚙️  Configuration Details');
     console.log('━'.repeat(50));
     console.log(`Config Account: ${mintData.configAccount.toBase58()}`);
-    console.log(`Admin: ${mintData.admin}`);
-    console.log(`Token Vault: ${mintData.tokenVault}`);
+    console.log(`Admin: ${mintData.admin.toBase58()}`);
+    console.log(`Token Vault: ${mintData.tokenVault.toBase58()}`);
     console.log('');
     console.log(`Fee Rate: ${(mintData.feeRate * 1).toFixed(2)} SOL`);
     console.log(`Target Eras: ${mintData.targetEras}`);
-    console.log(`Initial Mint Size: ${mintData.initialMintSize}`);
+    console.log(`Initial Mint Size: ${mintData.initialMintSize.toLocaleString()}`);
+    console.log(`Target Mint Size per Epoch: ${mintData.targetMintSizeEpoch.toLocaleString()}`);
     console.log(`Checkpoints per Milestone: ${mintData.epochesPerEra}`);
-    console.log(`Target Seconds per Checkpoint: ${mintData.targetSecondsPerEpoch}`);
+    console.log(`Target Seconds per Checkpoint: ${mintData.targetSecondsPerEpoch.toLocaleString()}`);
     console.log(`Reduce Ratio per Milestone: ${100 - mintData.reduceRatio * 100}%`);
     console.log(`Max Supply: ${mintData.maxSupply.toLocaleString()}`);
     console.log(`liquidity Tokens Ratio: ${mintData.liquidityTokensRatio}%`);
