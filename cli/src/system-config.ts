@@ -13,6 +13,7 @@ export async function systemConfigCommand(options: SystemConfigOptions) {
     console.log('\n📊 Flipflop system configs:');
     console.log('━'.repeat(50));
     console.log(`👤 System Admin:              ${systemConfigAccountInfo.admin.toBase58()}`);
+    console.log(`🔑 System Config Account:     ${systemConfigAccountInfo.systemConfigAccount.toBase58()}`);
     console.log(`🔢 Token Count:               ${systemConfigAccountInfo.count.toString()}`);
     console.log(`🎯 Referral Usage Max Count:  ${systemConfigAccountInfo.referralUsageMaxCount}`);
     // console.log(`💰 Protocol Fee Rate:         ${(systemConfigAccountInfo.protocolFeeRate * 100).toFixed(2)}%`);

@@ -39,10 +39,10 @@
     bn.js "^5.1.2"
     buffer-layout "^1.2.0"
 
-"@flipflop-sdk/node@^1.0.8":
-  version "1.0.8"
-  resolved "https://registry.npmjs.org/@flipflop-sdk/node/-/node-1.0.8.tgz#aac4c7e1706f35e14f04b8a1904883afff1fb604"
-  integrity sha512-SGjYx6/fEWv4Gdjmb4DqrSiQ5BtWazCLYYz+X727t45+kJ1Q5v1AzNn11+97BiOR4YLKnudSqcgPkyQUiJS14g==
+"@flipflop-sdk/node@^1.0.9":
+  version "1.0.9"
+  resolved "https://registry.npmjs.org/@flipflop-sdk/node/-/node-1.0.9.tgz#5e64aae24719670c98568bc2f986df0a8c1c2c13"
+  integrity sha512-VEIJGFhp3GWY34jca/zMD5aDLgAOSHGdNW4DDpcA8chHI1p35bqR7/wNolJU1ljyWzZJTzhUARLxDbDl3mx6Dw==
   dependencies:
     "@coral-xyz/anchor" "0.31.1"
     "@solana/spl-token" "^0.4.9"
