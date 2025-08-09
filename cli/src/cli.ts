@@ -9,13 +9,14 @@ import { mintCommand } from './mint';
 import { displayUrcCommand } from './display-urc';
 import { systemConfigCommand } from './system-config';
 import { metadataCommand } from './metadata';
+import { displayTokenParamsCommand } from './display-token-params';
 // Create the main program
 const program = new Command();
 
 program
   .name('flipflop')
   .description('A CLI tool for Flipflop token operations')
-  .version('1.1.10');
+  .version('1.1.11');
 
 // Add launch subcommand
 program.command('launch')
@@ -50,6 +51,12 @@ program.command('display-urc')
   .option('--rpc <url>', 'RPC endpoint', 'https://api.mainnet-beta.solana.com')
   .option('--urc <code>', 'URC code')
   .action(displayUrcCommand);
+
+program.command('display-token-params')
+  .description('Display token params')
+  .option('--rpc <url>', 'RPC endpoint', 'https://api.mainnet-beta.solana.com')
+  .option('--token-type <type>', 'Token type (meme or standard)', 'meme')
+  .action(displayTokenParamsCommand);
 
 // Add mint subcommand
 program.command('mint')
