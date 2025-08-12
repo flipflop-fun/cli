@@ -43,15 +43,20 @@ export async function burnLiquidityCommand(options: BurnLiquidityOptions) {
       burner,
     });
 
+    if (!result.success || !result.data) {
+      console.error('❌ Error: ', result.message);
+      return;
+    }
+
     console.log('\n✅ Liquidity Burned Successfully!');
     console.log('━'.repeat(50));
-    console.log(`Transaction Hash: ${result.signature}`);
-    console.log(`Mint Address: ${result.mintAddress}`);
-    console.log(`LP Tokens Burned: ${result.burnedLpTokenAmount}`);
-    console.log(`LP Token Mint: ${result.lpMintAddress}`);
-    console.log(`Pool Address: ${result.poolAddress}`);
+    console.log(`Transaction Hash: ${result.data.signature}`);
+    console.log(`Mint Address: ${result.data.mintAddress}`);
+    console.log(`LP Tokens Burned: ${result.data.burnedLpTokenAmount}`);
+    console.log(`LP Token Mint: ${result.data.lpMintAddress}`);
+    console.log(`Pool Address: ${result.data.poolAddress}`);
 
   } catch (error) {
-    console.error('❌ Error burning liquidity:', error instanceof Error ? error.message : 'Unknown error');
+    console.error('❌ Error: ', error instanceof Error ? error.message : 'Unknown error');
   }
 }

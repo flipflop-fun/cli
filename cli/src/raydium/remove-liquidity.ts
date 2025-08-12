@@ -45,18 +45,17 @@ export async function removeLiquidityCommand(options: RemoveLiquidityOptions) {
       slippage: options.slippage ? parseFloat(options.slippage) : 1,
     });
 
-    if (result.success && result.signature) {
-      console.log('\n✅ Liquidity Removed Successfully!');
-      console.log('━'.repeat(50));
-      console.log(`Transaction Hash: ${result.signature}`);
-      console.log(`Token A Received: ${result.tokenAAmount}`);
-      console.log(`Token B Received: ${result.tokenBAmount}`);
-    } else {
-      console.log('\n❌ Failed to remove liquidity');
-      console.log(`Error: ${result.error}`);
+    if (!result.success || !result.data) {
+      console.error('❌ Error: ', result.message);
+      return;
     }
 
+    console.log('\n✅ Liquidity Removed Successfully!');
+    console.log('━'.repeat(50));
+    console.log(`Transaction Hash: ${result.data.signature}`);
+    console.log(`Token A Received: ${result.data.tokenAAmount}`);
+    console.log(`Token B Received: ${result.data.tokenBAmount}`);
   } catch (error) {
-    console.error('❌ Error removing liquidity:', error instanceof Error ? error.message : 'Unknown error');
+    console.error('❌ Error: ', error instanceof Error ? error.message : 'Unknown error');
   }
 }

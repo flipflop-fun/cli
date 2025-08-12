@@ -49,24 +49,30 @@ export async function launchCommand(options: LaunchOptions) {
       uri: uri,
       creator,
     })
+
+    if (!result.success || !result.data) {
+      console.error('❌ Error: ', result.message);
+      return;
+    }
+
     console.log('\n✅ Token Created Successfully!');
     console.log('━'.repeat(50));
-    console.log(`Transaction Hash: ${result.transactionHash}`);
-    console.log(`Mint Address: ${result.mintAddress.toBase58()}`);
+    console.log(`Transaction Hash: ${result.data.transactionHash}`);
+    console.log(`Mint Address: ${result.data.mintAddress.toBase58()}`);
     
-    if (result.configuration) {
+    if (result.data.configuration) {
       console.log('\n⚙️  Token Configuration');
       console.log('━'.repeat(50));
-      console.log(`Admin: ${result.configuration.admin}`);
-      console.log(`Fee Rate: ${(result.configuration.feeRate * 1).toFixed(2)} SOL`);
-      console.log(`Max Supply: ${result.configuration.maxSupply.toLocaleString()}`);
-      console.log(`Initial Mint Size: ${result.configuration.initialMintSize.toLocaleString()}`);
-      console.log(`Target Eras: ${result.configuration.targetEras}`);
-      console.log(`Epochs Per Era: ${result.configuration.epochesPerEra}`);
-      console.log(`Token Vault: ${result.configuration.tokenVault}`);
+      console.log(`Admin: ${result.data.configuration.admin}`);
+      console.log(`Fee Rate: ${(result.data.configuration.feeRate * 1).toFixed(2)} SOL`);
+      console.log(`Max Supply: ${result.data.configuration.maxSupply.toLocaleString()}`);
+      console.log(`Initial Mint Size: ${result.data.configuration.initialMintSize.toLocaleString()}`);
+      console.log(`Target Eras: ${result.data.configuration.targetEras}`);
+      console.log(`Epochs Per Era: ${result.data.configuration.epochesPerEra}`);
+      console.log(`Token Vault: ${result.data.configuration.tokenVault}`);
     }
     
   } catch (error) {
-    console.error('❌ Error creating token:', error instanceof Error ? error.message : 'Unknown error');
+    console.error('❌ Error: ', error instanceof Error ? error.message : 'Unknown error');
   }
 }

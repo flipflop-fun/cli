@@ -146,8 +146,7 @@ program.command('raydium-burn-liquidity')
 program.command('raydium-display-pool')
   .description('Display Raydium CPMM pool information')
   .option('--rpc <url>', 'RPC endpoint', 'https://api.mainnet-beta.solana.com')
-  .option('--mint-a <address>', 'Token A mint address')
-  .option('--mint-b <address>', 'Token B mint address')
+  .option('--mint <address>', 'Mint account address')
   .action(displayPoolCommand);
 
 program.command('raydium-display-lp')

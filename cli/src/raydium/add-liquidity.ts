@@ -1,4 +1,4 @@
-import { PublicKey } from '@solana/web3.js';
+import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { loadKeypairFromBase58, loadKeypairFromFile } from '../utils';
 import { addLiquidity } from '@flipflop-sdk/node';
 
@@ -50,16 +50,21 @@ export async function addLiquidityCommand(options: AddLiquidityOptions) {
       payer,
     });
 
+    if (!result.success || !result.data) {
+      console.error('❌ Error: ', result.message);
+      return;
+    }
+
     console.log('\n✅ Liquidity Added Successfully!');
     console.log('━'.repeat(50));
-    console.log(`Transaction Hash: ${result.signature}`);
-    console.log(`Mint Address: ${result.mintAddress.toBase58()}`);
-    console.log(`Tokens Added: ${result.tokenAmount.toString()}`);
-    console.log(`SOL Added: ${result.solAmount.toString()}`);
-    console.log(`LP Tokens Received: ${result.lpTokenAmount.toString()}`);
-    console.log(`Pool Address: ${result.poolAddress.toBase58()}`);
+    console.log(`Transaction Hash: ${result.data.signature}`);
+    console.log(`Mint Address: ${result.data.mintAddress.toBase58()}`);
+    console.log(`Tokens Added: ${result.data.tokenAmount.toNumber() / LAMPORTS_PER_SOL}`);
+    console.log(`SOL Added: ${result.data.solAmount.toNumber() / LAMPORTS_PER_SOL}`);
+    console.log(`LP Tokens Received: ${result.data.lpTokenAmount.toNumber() / LAMPORTS_PER_SOL}`);
+    console.log(`Pool Address: ${result.data.poolAddress.toBase58()}`);
 
   } catch (error) {
-    console.error('❌ Error adding liquidity:', error instanceof Error ? error.message : 'Unknown error');
+    console.error('❌ Error: ', error instanceof Error ? error.message : 'Unknown error');
   }
 }

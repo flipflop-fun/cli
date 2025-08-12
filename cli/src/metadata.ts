@@ -34,13 +34,13 @@ export async function metadataCommand(options: MetadataOptions) {
       imagePath: options.imagePath,
     }
     const result = await generateMetadataUri(opt);
-    if (!result.success) {
-      console.error('❌ Error creating metadata:', result.error);
+    if (!result.success || !result.data) {
+      console.error('❌ Error: ', result.message);
       return;
     }
-    console.log("Image URI:", result.imageUrl);
-    console.log('Metadata URI:', result.metadataUrl);
+    console.log("Image URI:", result.data.imageUrl);
+    console.log('Metadata URI:', result.data.metadataUrl);
   } catch (error) {
-    console.error('❌ Error creating metadata:', error instanceof Error ? error.message : 'Unknown error');
+    console.error('❌ Error: ', error instanceof Error ? error.message : 'Unknown error');
   }
 }

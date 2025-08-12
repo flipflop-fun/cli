@@ -57,17 +57,22 @@ export async function createPoolCommand(options: CreatePoolOptions) {
       creator,
     });
 
+    if (!result.success || !result.data) {
+      console.error('❌ Error: ', result.message);
+      return;
+    }
+
     console.log('\n✅ Liquidity Pool Created Successfully!');
     console.log('━'.repeat(50));
-    console.log(`Transaction Hash: ${result.signature}`);
-    console.log(`Pool Address: ${result.poolAddress}`);
-    console.log(`Token A Mint: ${result.mintA}`);
-    console.log(`Token B Mint: ${result.mintB}`);
-    console.log(`Token A Amount: ${result.amountA}`);
-    console.log(`Token B Amount: ${result.amountB}`);
-    console.log(`Creator: ${result.creator}`);
+    console.log(`Transaction Hash: ${result.data.signature}`);
+    console.log(`Pool Address: ${result.data.poolAddress}`);
+    console.log(`Token A Mint: ${result.data.mintA}`);
+    console.log(`Token B Mint: ${result.data.mintB}`);
+    console.log(`Token A Amount: ${result.data.amountA}`);
+    console.log(`Token B Amount: ${result.data.amountB}`);
+    console.log(`Creator: ${result.data.creator}`);
 
   } catch (error) {
-    console.error('❌ Error creating pool:', error instanceof Error ? error.message : 'Unknown error');
+    console.error('❌ Error: ', error instanceof Error ? error.message : 'Unknown error');
   }
 }

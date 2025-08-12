@@ -26,15 +26,15 @@ export async function initCommand(options: InitSystemConfigOptions) {
   const result = await initializeSystemConfigAccount({
     rpc: rpcUrl,
     systemManager,
-  })
-  if (!result.success) {
-    console.log('❌ Error: System initialization failed');
+  });
+  if (!result.success || !result.data) {
+    console.error('❌ Error: ', result.message);
     return;
   }
   console.log('\n🎉 System Initialization Completed Successfully!');
   console.log('=' .repeat(50));
-  console.log(`📍 System Config Account: ${result.systemConfigAddress.toBase58()}`);
-  console.log(`👤 System Manager: ${result.systemManager.toBase58()}`);
-  console.log(`📍 Lookup Table Address: ${result.lookupTableAddress.toBase58()}`);
+  console.log(`📍 System Config Account: ${result.data.systemConfigAddress.toBase58()}`);
+  console.log(`👤 System Manager: ${result.data.systemManager.toBase58()}`);
+  console.log(`📍 Lookup Table Address: ${result.data.lookupTableAddress.toBase58()}`);
   console.log('\n✨ Your FlipFlop system is now ready for token operations!');
 }

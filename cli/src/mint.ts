@@ -14,22 +14,22 @@ interface MintOptions {
 export async function mintCommand(options: MintOptions) {
   try {
     if (!options.rpc) {
-      console.error('Error: Missing --rpc parameter');
+      console.error('❌ Error: Missing --rpc parameter');
       return;
     }
 
     if (!options.mint) {
-      console.error('Error: Missing --mint parameter');
+      console.error('❌ Error: Missing --mint parameter');
       return;
     }
 
     if (!options.urc) {
-      console.error('Error: Missing --urc parameter');
+      console.error('❌ Error: Missing --urc parameter');
       return;
     }
 
     if (!options.keypairBs58 && !options.keypairFile) {
-      console.error('Error: Missing --keypair-bs58 or --keypair-file parameter');
+      console.error('❌ Error: Missing --keypair-bs58 or --keypair-file parameter');
       return;
     }
 
@@ -46,9 +46,9 @@ export async function mintCommand(options: MintOptions) {
       lookupTableAccount: options.lut ? new PublicKey(options.lut) : undefined,
     })
 
-    if(!result?.success) {
+    if(!result?.success || !result?.data) {
       console.log("Minter: ", minter.publicKey.toBase58());
-      console.error('Error: Mint operation failed', result?.message);
+      console.error('❌ Error: Mint operation failed', result?.message);
       return;
     }
     
@@ -65,7 +65,7 @@ export async function mintCommand(options: MintOptions) {
     console.log(`Check your token balance by:\n> spl-token balance ${mintAccount} --owner ${minter.publicKey.toBase58()}`)
     console.log("=".repeat(40));
   } catch (error) {
-    console.error('Error: Mint operation failed -', error);
+    console.error('❌ Error: Mint operation failed -', error);
     process.exit(1);
   }
 }

@@ -9,26 +9,32 @@ export async function displayUrcCommand(options: any) {
     const urcDetails = await getUrcData({
       rpc: rpcUrl,
       urc,
-    })
+    });
+
+    if (!urcDetails.success || !urcDetails.data) {
+      console.log(urcDetails.message);
+      return;
+    }
+
     // Display formatted URC information
     console.log('\n🔗 URC (User Referral Code) Details');
     console.log('━'.repeat(50));
     
     console.log(`URC Code: ${urc}`);
-    console.log(`Code Hash: ${urcDetails.codeHash}`);
-    console.log(`Mint address: ${urcDetails.mint}`);
+    console.log(`Code Hash: ${urcDetails.data.codeHash}`);
+    console.log(`Mint address: ${urcDetails.data.mint}`);
     
     console.log('\n👤 Referrer Information');
     console.log('━'.repeat(50));
-    console.log(`Referrer Address: ${urcDetails.referrerMain}`);
-    console.log(`Referrer Token Account: ${urcDetails.referrerAta}`);
+    console.log(`Referrer Address: ${urcDetails.data.referrerMain}`);
+    console.log(`Referrer Token Account: ${urcDetails.data.referrerAta}`);
     
     console.log('\n📊 Usage Statistics');
     console.log('━'.repeat(50));
-    console.log(`Usage Count: ${urcDetails.usageCount}`);
+    console.log(`Usage Count: ${urcDetails.data.usageCount}`);
     
     // Format and display activation timestamp
-    const activationDate = new Date(parseInt(urcDetails.activeTimestamp.toString()) * 1000);
+    const activationDate = new Date(parseInt(urcDetails.data.activeTimestamp.toString()) * 1000);
     console.log(`Activated: ${activationDate.toLocaleString()}`);
     
     console.log('\n✅ URC is valid and ready for use');

@@ -44,15 +44,20 @@ export async function buyTokenCommand(options: BuyTokenOptions) {
       payer,
     });
 
+    if (!result.success || !result.data) {
+      console.error('❌ Error: ', result.message);
+      return;
+    }
+
     console.log('\n✅ Token Purchase Successful!');
     console.log('━'.repeat(50));
-    console.log(`Transaction Hash: ${result.txId}`);
-    console.log(`Mint Address: ${result.mintAddress.toBase58()}`);
-    console.log(`Tokens Purchased: ${result.tokenAmount}`);
-    console.log(`SOL Spent: ${result.solAmount}`);
-    console.log(`Pool Address: ${result.poolAddress.toBase58()}`);
+    console.log(`Transaction Hash: ${result.data.txId}`);
+    console.log(`Mint Address: ${result.data.mintAddress.toBase58()}`);
+    console.log(`Tokens Purchased: ${result.data.tokenAmount}`);
+    console.log(`SOL Spent: ${result.data.solAmount}`);
+    console.log(`Pool Address: ${result.data.poolAddress.toBase58()}`);
 
   } catch (error) {
-    console.error('❌ Error buying token:', error instanceof Error ? error.message : 'Unknown error');
+    console.error('❌ Error: ', error instanceof Error ? error.message : 'Unknown error');
   }
 }
