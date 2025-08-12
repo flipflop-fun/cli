@@ -24,7 +24,7 @@ const program = new Command();
 program
   .name('flipflop')
   .description('A CLI tool for Flipflop token operations')
-  .version('1.2.1');
+  .version('1.2.0');
 
 // Add launch subcommand
 program.command('launch')
@@ -99,6 +99,7 @@ program.command('raydium-buy')
   .option('--rpc <url>', 'RPC endpoint', 'https://api.mainnet-beta.solana.com')
   .option('--mint <address>', 'Mint account address')
   .option('--amount <amount>', 'Amount of tokens to buy')
+  .option('--slippage <percentage>', 'Slippage tolerance in percentage', '5')
   .option('--keypair-bs58 <bs58>', 'Keypair in BS58 format')
   .option('--keypair-file <pathfile>', 'Path to keypair file (Array format)')
   .action(buyTokenCommand);
@@ -108,6 +109,7 @@ program.command('raydium-sell')
   .option('--rpc <url>', 'RPC endpoint', 'https://api.mainnet-beta.solana.com')
   .option('--mint <address>', 'Mint account address')
   .option('--amount <amount>', 'Amount of tokens to sell')
+  .option('--slippage <percentage>', 'Slippage tolerance in percentage', '5')
   .option('--keypair-bs58 <bs58>', 'Keypair in BS58 format')
   .option('--keypair-file <pathfile>', 'Path to keypair file (Array format)')
   .action(sellTokenCommand);

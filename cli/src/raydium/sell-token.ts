@@ -6,6 +6,7 @@ interface SellTokenOptions {
   rpc?: string;
   mint: string;
   amount: string;
+  slippage: string;
   keypairBs58?: string;
   keypairFile?: string;
   lut?: string;
@@ -27,6 +28,10 @@ export async function sellTokenCommand(options: SellTokenOptions) {
     return;
   }
 
+  if (!options.slippage) {
+    options.slippage = '5';
+  }
+
   if (!options.keypairBs58 && !options.keypairFile) {
     console.error('❌ Error: Missing --keypair-bs58 or --keypair-file parameter');
     return;
@@ -41,6 +46,7 @@ export async function sellTokenCommand(options: SellTokenOptions) {
       rpc: options.rpc!,
       mint: new PublicKey(options.mint),
       amount: parseFloat(options.amount),
+      slippage: parseFloat(options.slippage),
       seller,
     });
 

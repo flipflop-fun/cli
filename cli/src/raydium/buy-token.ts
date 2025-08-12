@@ -6,6 +6,7 @@ interface BuyTokenOptions {
   rpc?: string;
   mint: string;
   amount: string;
+  slippage: string;
   keypairBs58?: string;
   keypairFile?: string;
   lut?: string;
@@ -15,6 +16,10 @@ export async function buyTokenCommand(options: BuyTokenOptions) {
   if (!options.rpc) {
     console.error('❌ Error: Missing --rpc parameter');
     return;
+  }
+
+  if (!options.slippage) {
+    options.slippage = '5';
   }
 
   if (!options.mint) {
@@ -41,6 +46,7 @@ export async function buyTokenCommand(options: BuyTokenOptions) {
       rpc: options.rpc!,
       mint: new PublicKey(options.mint),
       amount: parseFloat(options.amount),
+      slippage: parseFloat(options.slippage),
       payer,
     });
 
