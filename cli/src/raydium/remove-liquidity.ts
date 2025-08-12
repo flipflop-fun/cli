@@ -1,4 +1,4 @@
-import { PublicKey } from '@solana/web3.js';
+import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { loadKeypairFromBase58, loadKeypairFromFile } from '../utils';
 import { removeLiquidity } from '@flipflop-sdk/node';
 
@@ -53,8 +53,12 @@ export async function removeLiquidityCommand(options: RemoveLiquidityOptions) {
     console.log('\n✅ Liquidity Removed Successfully!');
     console.log('━'.repeat(50));
     console.log(`Transaction Hash: ${result.data.signature}`);
-    console.log(`Token A Received: ${result.data.tokenAAmount}`);
-    console.log(`Token B Received: ${result.data.tokenBAmount}`);
+    if (result.data.tokenAAmount) {
+      console.log(`Token A Received: ${result.data.tokenAAmount.toNumber() / LAMPORTS_PER_SOL}`);
+    }
+    if (result.data.tokenBAmount) {
+      console.log(`Token B Received: ${result.data.tokenBAmount.toNumber() / LAMPORTS_PER_SOL}`);
+    }
   } catch (error) {
     console.error('❌ Error: ', error instanceof Error ? error.message : 'Unknown error');
   }
