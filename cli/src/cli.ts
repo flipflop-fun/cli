@@ -24,7 +24,7 @@ const program = new Command();
 program
   .name('flipflop')
   .description('A CLI tool for Flipflop token operations')
-  .version('1.2.0');
+  .version('1.2.1');
 
 // Add launch subcommand
 program.command('launch')
@@ -101,7 +101,6 @@ program.command('raydium-buy')
   .option('--amount <amount>', 'Amount of tokens to buy')
   .option('--keypair-bs58 <bs58>', 'Keypair in BS58 format')
   .option('--keypair-file <pathfile>', 'Path to keypair file (Array format)')
-  .option('--lut <address>', 'LookupTableAddress of common addresses')
   .action(buyTokenCommand);
 
 program.command('raydium-sell')
@@ -111,7 +110,6 @@ program.command('raydium-sell')
   .option('--amount <amount>', 'Amount of tokens to sell')
   .option('--keypair-bs58 <bs58>', 'Keypair in BS58 format')
   .option('--keypair-file <pathfile>', 'Path to keypair file (Array format)')
-  .option('--lut <address>', 'LookupTableAddress of common addresses')
   .action(sellTokenCommand);
 
 program.command('raydium-add-liquidity')
