@@ -28,7 +28,7 @@ export async function systemConfigCommand(options: SystemConfigOptions) {
     console.log(`🏷️  Update Metadata Fee:       ${(systemConfigAccountInfo.data.updateMetadataFee).toFixed(2)} SOL`);
     console.log(`🚀 Customized Deploy Fee:     ${(systemConfigAccountInfo.data.customizedDeployFee).toFixed(2)} SOL`);
     console.log(`💧 Init Pool WSOL Percent:    ${(systemConfigAccountInfo.data.initPoolWsolAmount * 100).toFixed(2)}%`);
-    console.log(`🎓 Graduate Fee Rate:         ${(systemConfigAccountInfo.data.graduateFeeRate * 100).toFixed(2)}%`);
+    console.log(`🎓 Graduate Fee Rate:         ${(systemConfigAccountInfo.data.graduateFeeRate).toFixed(2)}%`);
     console.log(`💎 Min Graduate Fee:          ${(systemConfigAccountInfo.data.minGraduateFee).toFixed(2)} SOL`);
     console.log(`🌊 Raydium CPMM Create Fee:   ${(systemConfigAccountInfo.data.raydiumCpmmCreateFee).toFixed(2)} SOL`);
     // console.log(`📊 Transfer Fee Basis Points: ${systemConfigAccountInfo.transferFeeBasisPoints}`);
