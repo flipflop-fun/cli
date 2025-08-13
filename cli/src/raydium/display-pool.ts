@@ -48,10 +48,10 @@ export async function displayPoolCommand(options: DisplayPoolOptions) {
     console.log(`LP Token Mint: ${result.data.mintLp.toBase58()}`);
     console.log(`Token A Mint: ${result.data.mintA.toBase58()}`);
     console.log(`Token B Mint: ${result.data.mintB.toBase58()}`);
-    console.log(`LP Supply: ${result.data.lpAmount.toNumber() / LAMPORTS_PER_SOL}`);
-    console.log(`Pool Price: ${(1 / result.data.poolPrice).toFixed(6)} Token/SOL`);
-    console.log(`Base Reserve: ${(result.data.baseReserve.toNumber() / LAMPORTS_PER_SOL).toFixed(6)} SOL`);
-    console.log(`Quote Reserve: ${(result.data.quoteReserve.toNumber() / LAMPORTS_PER_SOL).toFixed(6)} Token`);
+    console.log(`LP Supply: ${(result.data.lpAmount.mul(new BN(1000)).div(new BN(LAMPORTS_PER_SOL)).toNumber() / 1000).toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 })}`);
+    console.log(`Pool Price: ${(1 / result.data.poolPrice).toFixed(12)} Token/SOL`);
+    console.log(`Base Reserve: ${((result.data.baseReserve.mul(new BN(1000)).div(new BN(LAMPORTS_PER_SOL))).toNumber() / 1000).toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 })} SOL`);
+    console.log(`Quote Reserve: ${((result.data.quoteReserve.mul(new BN(1000)).div(new BN(LAMPORTS_PER_SOL))).toNumber() / 1000).toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 })} Token`);
 
   } catch (error) {
     console.error('❌ Error: ', error instanceof Error ? error.message : 'Unknown error');
