@@ -39,10 +39,10 @@
     bn.js "^5.1.2"
     buffer-layout "^1.2.0"
 
-"@flipflop-sdk/node@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@flipflop-sdk/node/-/node-1.2.0.tgz#b1a0631ddd133073394b4d4cee4e3de19a8bf3d4"
-  integrity sha512-cctQsX0ZzX9jgGU2IfN2mU2RVUt5RHIHNyZ7A/yzKFWP5Xuq88KpGg4Fc4DnaZNhSvq4D1q4kWq4c82TbDEAHQ==
+"@flipflop-sdk/node@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@flipflop-sdk/node/-/node-1.2.1.tgz#ad46f43a5a1c004b23655886c86275fce47cd881"
+  integrity sha512-RHVg2nnSQMP3JVgJZatMQtxxeMncUPiO0CY30yLxJ/AEVx+oY4tH2/0i6s4eiio3Xp2x1MO0RX53yJQD6yPRew==
   dependencies:
     "@coral-xyz/anchor" "0.31.1"
     "@raydium-io/raydium-sdk-v2" "^0.2.8-alpha"
@@ -1031,9 +1031,9 @@ json5@^2.2.2:
   integrity sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==
 
 jsonfile@^6.1.0:
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/jsonfile/-/jsonfile-6.1.0.tgz#bc55b2634793c679ec6403094eb13698a6ec0aae"
-  integrity sha512-5dgndWOriYSm5cnYaJNhalLNDKOqFwyDB/rr1E9ZsGciGvKPs8R2xYGCacuf3z6K1YKDz182fd+fY3cn3pMqXQ==
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/jsonfile/-/jsonfile-6.2.0.tgz#7c265bd1b65de6977478300087c99f1c84383f62"
+  integrity sha512-FGuPw30AdOIUTRMC2OMRtQV+jkVj2cfPqSeWXv1NEAJ1qZ5zb1X6z1mFhbfOB/iy3ssJCD+3KuZ8r8C3uVFlAg==
   dependencies:
     universalify "^2.0.0"
   optionalDependencies:
