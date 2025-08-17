@@ -48,7 +48,7 @@ export const estimateVolumeCommand = async (options: {
       const actionText = result.data.action === 'buy' ? 'Required SOL' : 'Expected Receive SOL';
       console.log(`\n💰 ${actionText}`);
       console.log('━'.repeat(30));
-      console.log(`Amount:                                  ${result.data.requiredAmount.toNumber() / LAMPORTS_PER_SOL} SOL`);
+      console.log(`WSOL Amount:                                  ${result.data.requiredAmount.toNumber() / LAMPORTS_PER_SOL} SOL`);
     }
     
     if (result.data.actualPrice) {
