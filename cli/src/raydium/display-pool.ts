@@ -22,7 +22,6 @@ export async function displayPoolCommand(options: DisplayPoolOptions) {
   try {
     const connection = new Connection(options.rpc, 'confirmed');
     const result = await displayPool({
-      connection,
       tokenAMint: NATIVE_MINT,
       tokenBMint: new PublicKey(options.mint),
       rpc: options.rpc,

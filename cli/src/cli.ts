@@ -18,13 +18,15 @@ import { burnLiquidityCommand } from './raydium/burn-liquidity';
 import { displayPoolCommand } from './raydium/display-pool';
 import { displayLPCommand } from './raydium/display-lp';
 import { createPoolCommand } from './raydium/create-pool';
+import { estimateSlippageCommand } from './raydium/estimate-slippage';
+import { estimateVolumeCommand } from './raydium/estimate-volume';
 // Create the main program
 const program = new Command();
 
 program
   .name('flipflop')
   .description('A CLI tool for Flipflop token operations')
-  .version('1.2.6');
+  .version('1.3.0');
 
 // Add launch subcommand
 program.command('launch')
@@ -166,6 +168,22 @@ program.command('raydium-create-pool')
   .option('--keypair-bs58 <bs58>', 'Keypair in BS58 format')
   .option('--keypair-file <pathfile>', 'Path to keypair file (Array format)')
   .action(createPoolCommand);
+
+program.command('raydium-estimate-slippage')
+  .description('Estimate slippage for a Raydium CPMM transaction by amount')
+  .option('--rpc <url>', 'RPC endpoint', 'https://api.mainnet-beta.solana.com')
+  .option('--mint <address>', 'Mint account address')
+  .option('--action <action>', 'Action to perform (buy/sell)')
+  .option('--amount <amount>', 'Amount of tokens to trade')
+  .action(estimateSlippageCommand);
+
+program.command('raydium-estimate-volume')
+  .description('Estimate volume for a Raydium CPMM transaction by max slippage')
+  .option('--rpc <url>', 'RPC endpoint', 'https://api.mainnet-beta.solana.com')
+  .option('--mint <address>', 'Mint account address')
+  .option('--action <action>', 'Action to perform (buy/sell)')
+  .option('--max-slippage <percentage>', 'Max slippage tolerance in percentage', '10')
+  .action(estimateVolumeCommand);
 
   // Add init subcommand
 // program.command('init')
