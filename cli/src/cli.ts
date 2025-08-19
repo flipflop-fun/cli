@@ -26,7 +26,7 @@ const program = new Command();
 program
   .name('flipflop')
   .description('A CLI tool for Flipflop token operations')
-  .version('1.3.2');
+  .version('1.3.3');
 
 // Add launch subcommand
 program.command('launch')

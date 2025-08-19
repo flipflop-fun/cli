@@ -59,8 +59,8 @@ export async function buyTokenCommand(options: BuyTokenOptions) {
     console.log('━'.repeat(50));
     console.log(`Transaction Hash: ${result.data.txId}`);
     console.log(`Mint Address: ${result.data.mintAddress.toBase58()}`);
-    console.log(`Tokens Purchased: ${result.data.tokenAmount}`);
-    console.log(`SOL Spent: ${result.data.solAmount}`);
+    console.log(`Tokens Purchased: ${result.data.actualTokenAmount}`);
+    console.log(`SOL Spent: ${result.data.actualSolAmount}`);
     console.log(`Pool Address: ${result.data.poolAddress.toBase58()}`);
 
   } catch (error) {

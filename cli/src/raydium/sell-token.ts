@@ -59,8 +59,8 @@ export async function sellTokenCommand(options: SellTokenOptions) {
     console.log('━'.repeat(50));
     console.log(`Transaction Hash: ${result.data.txId}`);
     console.log(`Mint Address: ${result.data.mintAddress.toBase58()}`);
-    console.log(`Tokens Sold: ${result.data.tokenAmount}`);
-    console.log(`SOL Received: ${result.data.solAmount}`);
+    console.log(`Tokens Sold: ${result.data.actualTokenAmount}`);
+    console.log(`SOL Received: ${result.data.actualSolAmount}`);
     console.log(`Pool Address: ${result.data.poolAddress.toBase58()}`);
 
   } catch (error) {
