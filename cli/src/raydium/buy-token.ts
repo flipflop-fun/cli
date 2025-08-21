@@ -61,6 +61,8 @@ export async function buyTokenCommand(options: BuyTokenOptions) {
     console.log(`Mint Address: ${result.data.mintAddress.toBase58()}`);
     console.log(`Tokens Purchased: ${result.data.actualTokenAmount}`);
     console.log(`SOL Spent: ${result.data.actualSolAmount}`);
+    console.log(`Actual Cost: ${result.data.actualCost}`);
+    console.log(`Amount from: ${result.data.amountFrom}`);
     console.log(`Pool Address: ${result.data.poolAddress.toBase58()}`);
 
   } catch (error) {
