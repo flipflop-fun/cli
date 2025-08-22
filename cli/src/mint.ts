@@ -45,6 +45,7 @@ export async function mintCommand(options: MintOptions) {
       urc: options.urc,
       lookupTableAccount: options.lut ? new PublicKey(options.lut) : undefined,
     })
+    console.log(result);
 
     if(!result?.success || !result?.data) {
       console.log("Minter: ", minter.publicKey.toBase58());
