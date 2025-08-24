@@ -20,13 +20,14 @@ import { displayLPCommand } from './raydium/display-lp';
 import { createPoolCommand } from './raydium/create-pool';
 import { estimateSlippageCommand } from './raydium/estimate-slippage';
 import { estimateVolumeCommand } from './raydium/estimate-volume';
+import { refundCommand } from './refund';
 // Create the main program
 const program = new Command();
 
 program
   .name('flipflop')
   .description('A CLI tool for Flipflop token operations')
-  .version('1.3.8');
+  .version('1.3.9');
 
 // Add launch subcommand
 program.command('launch')
@@ -78,6 +79,15 @@ program.command('mint')
   .option('--keypair-file <pathfile>', 'Path to keypair file (Array format)')
   .option('--lut <address>', 'LookupTableAddress of common addresses')
   .action(mintCommand);
+
+// Add refund subcommand
+program.command('refund')
+  .description('Refund tokens')
+  .option('--rpc <url>', 'RPC endpoint', 'https://api.mainnet-beta.solana.com')
+  .option('--mint <address>', 'Mint account address')
+  .option('--keypair-bs58 <bs58>', 'Keypair in BS58 format')
+  .option('--keypair-file <pathfile>', 'Path to keypair file (Array format)')
+  .action(refundCommand);
 
 // Add show system config
 program.command('system-config')

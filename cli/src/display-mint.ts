@@ -38,6 +38,7 @@ export async function displayMintCommand(options: any) {
     console.log(`Fee Rate: ${(mintData.data.feeRate * 1).toFixed(2)} SOL`);
     console.log(`Target Eras: ${mintData.data.targetEras}`);
     console.log(`Initial Mint Size: ${mintData.data.initialMintSize.toLocaleString()}`);
+    console.log(`Initial Target Mint Size per Epoch: ${mintData.data.initialTargetMintSizePerEpoch.toLocaleString()}`);
     console.log(`Target Mint Size per Epoch: ${mintData.data.targetMintSizeEpoch.toLocaleString()}`);
     console.log(`Checkpoints per Milestone: ${mintData.data.epochesPerEra}`);
     console.log(`Target Seconds per Checkpoint: ${mintData.data.targetSecondsPerEpoch.toLocaleString()}`);
