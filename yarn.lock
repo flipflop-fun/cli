@@ -39,10 +39,10 @@
     bn.js "^5.1.2"
     buffer-layout "^1.2.0"
 
-"@flipflop-sdk/node@^1.3.7":
-  version "1.3.7"
-  resolved "https://registry.yarnpkg.com/@flipflop-sdk/node/-/node-1.3.7.tgz#7e7ce10e51bb9b354b88b9f29b9e5aa0fb510de1"
-  integrity sha512-P8Qyx1r2+VWMvtAhSWKbkzAbibeZCc+3bOWxaM5W9C4WCg21vMJI3DbMGjrS+IhzkqOpB8B7WrGBDPPDuqSyyQ==
+"@flipflop-sdk/node@^1.3.8":
+  version "1.3.8"
+  resolved "https://registry.yarnpkg.com/@flipflop-sdk/node/-/node-1.3.8.tgz#0a29eb082759d4dffe2073772054b085a79dc0a9"
+  integrity sha512-+yfTXCtzCjfuXjqOzOie+Qs3bcaT6ggdfnhPa9YutIQErnAN1k5Gz2HcpWoABWTfzwExJ/1aaG349sFi7FAq6g==
   dependencies:
     "@coral-xyz/anchor" "0.31.1"
     "@raydium-io/raydium-sdk-v2" "^0.2.8-alpha"
