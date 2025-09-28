@@ -9,6 +9,7 @@ interface MintOptions {
   mint: string;
   urc: string;
   lut?: string;
+  skipPreflight?: boolean;
 }
 
 export async function mintCommand(options: MintOptions) {
@@ -44,6 +45,7 @@ export async function mintCommand(options: MintOptions) {
       mint: mintAccount,
       urc: options.urc,
       lookupTableAccount: options.lut ? new PublicKey(options.lut) : undefined,
+      skipPreflight: options.skipPreflight || false,
     })
 
     if(!result?.success || !result?.data) {

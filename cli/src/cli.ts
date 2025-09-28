@@ -36,7 +36,7 @@ program.command('launch')
   .option('--name <name>', 'Token name')
   .option('--symbol <symbol>', 'Token symbol')
   .option('--uri <uri>', 'Token URI')
-  .option('--token-type <type>', 'Token type (meme or standard)', 'meme')
+  .option('--token-type <type>', 'Token type (meme, standard or test)', 'meme')
   .option('--keypair-bs58 <bs58>', 'Keypair in BS58 format')
   .option('--keypair-file <pathfile>', 'Path to keypair file (Array format)')
   .action(launchCommand);
@@ -66,7 +66,7 @@ program.command('display-urc')
 program.command('display-token-params')
   .description('Display token params')
   .option('--rpc <url>', 'RPC endpoint', 'https://api.mainnet-beta.solana.com')
-  .option('--token-type <type>', 'Token type (meme or standard)', 'meme')
+  .option('--token-type <type>', 'Token type (meme, standard or test)', 'meme')
   .action(displayTokenParamsCommand);
 
 // Add mint subcommand
@@ -78,6 +78,7 @@ program.command('mint')
   .option('--keypair-bs58 <bs58>', 'Keypair in BS58 format')
   .option('--keypair-file <pathfile>', 'Path to keypair file (Array format)')
   .option('--lut <address>', 'LookupTableAddress of common addresses')
+  .option('--skip-preflight', 'Skip preflight checks', false)
   .action(mintCommand);
 
 // Add refund subcommand

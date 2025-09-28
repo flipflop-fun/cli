@@ -3,7 +3,7 @@ import { displayTokenParams } from '@flipflop-sdk/node';
 
 export const displayTokenParamsCommand = async (options: {
   rpc: string;
-  tokenType: "meme" | "standard";
+  tokenType: "meme" | "standard" | "test";
 }) => {
   const { rpc, tokenType } = options;
   
